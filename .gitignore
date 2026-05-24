@@ -1,0 +1,103 @@
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+Thumbs.db
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+#.vscode/
+
+# Flutter / Dart (mobile_app only)
+apps/mobile_app/.dart_tool/
+apps/mobile_app/.flutter-plugins
+apps/mobile_app/.flutter-plugins-dependencies
+apps/mobile_app/.packages
+apps/mobile_app/.pub-cache/
+apps/mobile_app/.pub/
+apps/mobile_app/build/
+apps/mobile_app/coverage/
+
+# Flutter generated docs
+apps/mobile_app/**/doc/api/
+
+# iOS build artifacts
+apps/mobile_app/ios/Flutter/.last_build_id
+apps/mobile_app/ios/Pods/
+
+# Android build outputs
+apps/mobile_app/android/app/debug/
+apps/mobile_app/android/app/profile/
+apps/mobile_app/android/app/release/
+
+*.apk
+*.aab
+*.keystore
+
+# Desktop Flutter ephemeral files
+apps/mobile_app/linux/flutter/ephemeral/
+apps/mobile_app/macos/Flutter/ephemeral/
+apps/mobile_app/windows/flutter/ephemeral/
+
+# Web build
+apps/mobile_app/web/build/
+apps/mobile_app/web/.dart_tool/
+
+# Node / Backend (future API / admin panel support)
+backend/node_modules/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/dist/
+
+# Backend builds
+backend/build/
+backend/.env
+backend/.env.*
+
+# Secrets (CRITICAL)
+.env
+.env.*
+*.env
+
+firebase-adminsdk.json
+serviceAccountKey.json
+
+# Database local files
+database/*.sqlite
+database/*.db
+database/*.dump
+
+# Shared / generated artifacts
+shared/**/build/
+shared/**/.dart_tool/
+
+# Test / coverage
+coverage/
+test-results/
+
+# Build outputs (monorepo safety)
+apps/**/build/
+backend/**/dist/
+shared/**/build/
+
+# Temporary files
+*.tmp
+*.temp
+
+# GitHub / CI local caches
+.github/workflows/*.log
