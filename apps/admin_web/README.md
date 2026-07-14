@@ -1,61 +1,16 @@
+# React + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-# Admin Web Application
+Currently, two official plugins are available:
 
----
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Project Title
-Admin Web Application - Smart Bus Tracking System
+## React Compiler
 
----
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Project Description
-The Admin Web Application is a React-based dashboard for the Smart Bus Tracking System.  
-It is used by administrators to manage and monitor transportation operations such as buses, routes, drivers, and schedules.
+## Expanding the Oxlint configuration
 
----
-
-## Tech Stack
-- React
-- Vite
-- Firebase
-- React Router
-
----
-
-## Installation / Setup Instructions
-
-### 1. Navigate to project folder
-```bash
- ⚙️ Installation & Setup
-
-## 1. Navigate to the Admin Web Application
-
-```bash
-cd apps/admin_web
-```
-
-## 2. Install Dependencies
-
-```bash
-npm install
-```
-
-## 3. Start Development Server
-
-```bash
-npm run dev
-```
-
----
-
-##  Development Server
-
-After running the development server, Vite will provide a local URL similar to:
-
-```bash
-http://localhost:5173
-```
-
-Open the URL in your browser to access the admin web application.
-```
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.

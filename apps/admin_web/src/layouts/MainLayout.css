@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+}
+
+.main {
+  flex: 1;
+  background: #f5f7fa;
+}
+
+.content {
+  padding: 30px;
+}

@@ -1,0 +1,51 @@
+.user-table {
+  width: 100%;
+
+  background: white;
+
+  border-collapse: collapse;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.user-table th {
+  background: #1e293b;
+
+  color: white;
+
+  padding: 15px;
+}
+
+.user-table td {
+  padding: 15px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.user-table button {
+  margin-right: 8px;
+
+  padding: 8px 14px;
+
+  border: none;
+
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+.user-table button:first-child {
+  background: #3b82f6;
+
+  color: white;
+}
+
+.user-table button:last-child {
+  background: #ef4444;
+
+  color: white;
+}
