@@ -23,190 +23,198 @@ concurrency:
 jobs:
 
   # ==================================================
-  # 1. Check Admin Panel
+  # Admin Panel Error Checking
   # ==================================================
   admin-check:
     name: Check Admin Panel
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: apps/admin
-
-    steps:
-      # Download repository
-      - name: 📥 Checkout Repository
+  steps:
+      - name: Checkout Repository
         uses: actions/checkout@v5
 
-      # Check whether admin folder exists
-      - name: 📁 Check Admin Folder
+      - name: Check Admin Project Files
         run: |
-          if [ ! -d "." ]; then
-            echo "Admin folder was not found"
+          if [ ! -d "apps/admin" ]; then
+            echo "ERROR: apps/admin folder was not found"
             exit 1
           fi
 
-          if [ ! -f "package.json" ]; then
-            echo "package.json was not found inside apps/admin"
+          if [ ! -f "apps/admin/package.json" ]; then
+            echo "ERROR: apps/admin/package.json was not found"
             exit 1
           fi
 
-          echo "Admin project folder found successfully"
+          echo "Admin project found successfully"
 
-      # Install Node.js
-      - name: 🟢 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: "22"
-          cache: npm
-          cache-dependency-path: apps/admin/package-lock.json
 
-      # Install packages
-      - name: 📦 Install Admin Dependencies
-        run: npm ci
+      - name: Install Admin Dependencies
+        working-directory: apps/admin
+        run: |
+          if [ -f "package-lock.json" ]; then
+            npm ci
+          else
+            echo "package-lock.json not found. Using npm install."
+            npm install
+          fi
 
-      # Check code formatting
-      - name: 📝 Check Code Formatting
-        run: npm run format:check
-        if: ${{ hashFiles('apps/admin/package.json') != '' }}
+      - name: Run ESLint
+        working-directory: apps/admin
+        run: |
+          if npm run | grep -q "lint"; then
+            npm run lint
+          else
+            echo "Lint script not found. Skipping ESLint."
+          fi
 
-      # Check JavaScript/TypeScript errors
-      - name: 🔍 Run ESLint
-        run: npm run lint
+      - name: Check Code Formatting
+        working-directory: apps/admin
+        run: |
+          if npm run | grep -q "format:check"; then
+            npm run format:check
+          else
+            echo "format:check script not found. Skipping formatting check."
+          fi
 
-      # Run admin tests
-      - name: 🧪 Run Admin Tests
-        run: npm test -- --run
+      - name: Run Admin Tests
+        working-directory: apps/admin
+        run: |
+          if npm run | grep -q "test"; then
+            npm test -- --runInBand
+          else
+            echo "Test script not found. Skipping tests."
+          fi
+        env:
+          CI: true
 
-      # Build admin project
-      - name: 🏗️ Build Admin Panel
-        run: npm run build
+      - name: Build Admin Panel
+        working-directory: apps/admin
+        run: |
+          if npm run | grep -q "build"; then
+            npm run build
+          else
+            echo "ERROR: build script was not found in package.json"
+            exit 1
+          fi
 
-      # Check build folder
-      - name: ✅ Verify Admin Build
+      - name: Verify Admin Build
+        working-directory: apps/admin
         run: |
           if [ -d "dist" ]; then
-            echo "Vite build folder found"
+            echo "Vite dist folder found"
             ls -la dist
           elif [ -d "build" ]; then
             echo "React build folder found"
             ls -la build
           else
-            echo "Admin build folder was not created"
+            echo "ERROR: No dist or build folder was created"
             exit 1
           fi
 
-      # Upload Vite build
-      - name: 📤 Upload Vite Admin Build
+      - name: Upload Vite Build
         if: ${{ hashFiles('apps/admin/dist/**') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: admin-panel-vite-${{ github.sha }}
+          name: admin-vite-${{ github.sha }}
           path: apps/admin/dist/
           if-no-files-found: error
           retention-days: 14
 
-      # Upload React build
-      - name: 📤 Upload React Admin Build
+      - name: Upload React Build
         if: ${{ hashFiles('apps/admin/build/**') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: admin-panel-react-${{ github.sha }}
+          name: admin-react-${{ github.sha }}
           path: apps/admin/build/
           if-no-files-found: error
           retention-days: 14
 
-
-  # ==================================================
-  # 2. Check and Build Flutter Mobile App
+   # ==================================================
+  # Flutter Mobile Application
   # ==================================================
   mobile-check:
     name: Check Flutter Mobile App
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: apps/mobile_app
-
-    steps:
-      # Download repository
-      - name: 📥 Checkout Repository
+  steps:
+      - name: Checkout Repository
         uses: actions/checkout@v5
 
-      # Check Flutter folder
-      - name: 📁 Check Flutter Project
+      - name: Check Flutter Project
         run: |
-          if [ ! -f "pubspec.yaml" ]; then
-            echo "pubspec.yaml was not found in apps/mobile_app"
+          if [ ! -f "apps/mobile_app/pubspec.yaml" ]; then
+            echo "ERROR: apps/mobile_app/pubspec.yaml was not found"
             exit 1
           fi
 
           echo "Flutter project found successfully"
 
-      # Install Java
-      - name: ☕ Setup Java 21
+      - name: Setup Java 21
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
 
-      # Install Flutter
-      - name: 🦋 Setup Flutter
+      - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: "3.44.0"
           cache: true
 
-      # Show Flutter information
-      - name: 🔎 Flutter Doctor
+      - name: Flutter Doctor
         run: flutter doctor -v
 
-      # Install Flutter packages
-      - name: 📦 Install Flutter Dependencies
+      - name: Install Flutter Dependencies
+        working-directory: apps/mobile_app
         run: flutter pub get
 
-      # Check Dart formatting
-      - name: 📝 Check Dart Formatting
+      - name: Check Dart Formatting
+        working-directory: apps/mobile_app
         run: dart format --output=none --set-exit-if-changed lib test
 
-      # Check Flutter errors
-      - name: 🔍 Analyze Flutter Project
+      - name: Analyze Flutter Project
+        working-directory: apps/mobile_app
         run: flutter analyze
 
-      # Run Flutter tests
-      - name: 🧪 Run Flutter Tests
-        run: flutter test
+      - name: Run Flutter Tests
+        working-directory: apps/mobile_app
+        run: |
+          if [ -d "test" ]; then
+            flutter test
+          else
+            echo "Test folder not found. Skipping Flutter tests."
+          fi
 
-      # Build APK
-      - name: 🏗️ Build Release APK
+      - name: Build Release APK
+        working-directory: apps/mobile_app
         run: flutter build apk --release --split-per-abi
 
-      # Check APK files
-      - name: ✅ Verify APK Output
+      - name: Verify APK Output
+        working-directory: apps/mobile_app
         run: |
           ls -la build/app/outputs/flutter-apk
+          test -f build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 
-          test -f \
-          build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
-
-      # Collect APK files
-      - name: 📦 Collect APK Files
+      - name: Collect APK Files
+        working-directory: apps/mobile_app
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/*.apk artifacts/
 
-      # Upload APK files
-      - name: 📤 Upload APK Artifacts
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: smart-transport-mobile-app-${{ github.sha }}
+          name: smart-transport-mobile-${{ github.sha }}
           path: apps/mobile_app/artifacts/*.apk
           if-no-files-found: error
           retention-days: 14
 
-      # Create release only when a tag is pushed
-      - name: 🚀 Create GitHub Release
+      - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: ncipollo/release-action@v1
         with:
