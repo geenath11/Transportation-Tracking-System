@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/onboarding_item.dart';
-import 'auth_screen.dart';
+import 'widgets/onboarding_item.dart';
+import '../auth/presentation/screen/auth_screen.dart';
+import '../../core/theme/app_text_styles.dart ';
+import '../../core/widgets/primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -26,21 +28,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       secondaryIcon: Icons.train_rounded,
       title: 'Track Bus and Train Services',
       description:
-      'View available bus and train services, live transport updates and journey information from one place.',
+      'View transport services, updates, and journey details.',
     ),
     OnboardingItem(
       primaryIcon: Icons.route_rounded,
       secondaryIcon: Icons.schedule_rounded,
       title: 'Plan Your Complete Journey',
       description:
-      'Find bus routes, train schedules, stations, stops and estimated arrival times easily.',
+      'Find routes, schedules, stops and arrival times.',
     ),
     OnboardingItem(
       primaryIcon: Icons.confirmation_number_rounded,
       secondaryIcon: Icons.qr_code_2_rounded,
       title: 'Book and Travel Easily',
       description:
-      'Book bus or train tickets, receive a digital QR ticket and manage your upcoming journeys.',
+      'Book tickets, get a QR ticket, and manage upcoming journey',
     ),
   ];
 
@@ -91,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       context,
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 650),
-        pageBuilder: (_, animation, __) {
+        pageBuilder: (_, animation, _) {
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1, 0),
@@ -139,11 +141,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 padding: const EdgeInsets.only(right: 14, top: 4),
                 child: TextButton(
                   onPressed: _openLoginPage,
-                  child: const Text(
+                  child:  Text(
                     'Skip',
-                    style: TextStyle(
+                    style: AppTextStyles.bold.copyWith(
                       color: Color(0xFF0D5BD7),
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -227,17 +228,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 Text(
                                   page.title,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style:  AppTextStyles.bold.copyWith(
                                     fontSize: 27,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF063A8C),
+                                    color: Color(0xFF0D5BD7),
                                   ),
                                 ),
                                 const SizedBox(height: 17),
                                 Text(
                                   page.description,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
+                                  style: AppTextStyles.semiBold.copyWith(
                                     fontSize: 16,
                                     height: 1.55,
                                     color: Colors.black54,
@@ -276,35 +277,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ),
             ),
             const SizedBox(height: 28),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 30),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _currentPage == _pages.length - 1
-                      ? _openLoginPage
-                      : _nextPage,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0D5BD7),
-                    foregroundColor: Colors.white,
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                  ),
-                  child: Text(
-                    _currentPage == _pages.length - 1
-                        ? 'Get Started'
-                        : 'Next',
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
+        PrimaryButton(
+
+          onPressed: _currentPage == _pages.length - 1
+              ? _openLoginPage
+              : _nextPage,
+
+          child: Text(
+            _currentPage == _pages.length - 1
+                ? 'Get Started'
+                : 'Next',
+            style: AppTextStyles.semiBold.copyWith(
+              fontSize: 17,
             ),
+          ),
+        ),
+
           ],
         ),
       ),

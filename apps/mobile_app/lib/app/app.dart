@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../features/auth/presentation/screeen/splash_screen.dart';
+import '../features/onboarding/splash_screen.dart';
 class CeyGoApp extends StatelessWidget {
   const CeyGoApp({super.key});
 
