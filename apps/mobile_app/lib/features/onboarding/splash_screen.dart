@@ -10,7 +10,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -18,56 +17,52 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadNextScreen() async {
-
     // Wait time for splash screen
-    await Future.delayed(
-      const Duration(seconds: 3),
-    );
+    await Future.delayed(const Duration(seconds: 3));
 
     if (!mounted) return;
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => const OnboardingScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
 
-    return  Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFF3339EC),
-                Color(0xFF4CA0F3),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF3339EC), Color(0xFF4CA0F3)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-        children: [Text(
-          "Cey Go",
-          style: AppTextStyles.bold.copyWith(
-            fontSize: 65,
-            color: Colors.white
-          ),
-        ),SizedBox(height: 5,),Text("Smart Travel Starts Here",style: AppTextStyles.semiBold.copyWith(
-          fontSize: 20,
-          color:Colors.white.withOpacity(.6),
-          
-        ))]
+          children: [
+            Text(
+              "Cey Go",
+              style: AppTextStyles.bold.copyWith(
+                fontSize: 65,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              "Smart Travel Starts Here",
+              style: AppTextStyles.semiBold.copyWith(
+                fontSize: 20,
+                color: Colors.white.withOpacity(.6),
+              ),
+            ),
+          ],
+        ),
       ),
-
-    ));
+    );
   }
 }

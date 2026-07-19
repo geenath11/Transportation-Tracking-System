@@ -9,9 +9,7 @@ class OtpScreen extends StatelessWidget {
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        title: const Text(
-          "OTP Verification",
-        ),
+        title: const Text("OTP Verification"),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -20,10 +18,7 @@ class OtpScreen extends StatelessWidget {
       body: const Center(
         child: Text(
           "OTP Screen Placeholder",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );
