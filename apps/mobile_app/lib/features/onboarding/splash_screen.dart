@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
               "Smart Travel Starts Here",
               style: AppTextStyles.semiBold.copyWith(
                 fontSize: 20,
-                color: Colors.white.withOpacity(.6),
+                color: Colors.white.withValues(alpha: 0.6),
               ),
             ),
           ],

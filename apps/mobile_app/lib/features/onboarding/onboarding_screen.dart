@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/onboarding_item.dart';
 import '../auth/presentation/screen/auth_screen.dart';
-import '../../core/theme/app_text_styles.dart ';
+import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -172,7 +172,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 BoxShadow(
                                   color: const Color(
                                     0xFF0D5BD7,
-                                  ).withOpacity(0.13),
+                                  ).withValues(alpha: 0.13),
                                   blurRadius: 32,
                                   offset: const Offset(0, 16),
                                 ),
