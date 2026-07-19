@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/onboarding/splash_screen.dart';
+
 class CeyGoApp extends StatelessWidget {
   const CeyGoApp({super.key});
 
@@ -10,9 +11,7 @@ class CeyGoApp extends StatelessWidget {
       title: 'Cey Go',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0D5BD7),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D5BD7)),
         scaffoldBackgroundColor: Colors.white,
       ),
       home: const SplashScreen(),

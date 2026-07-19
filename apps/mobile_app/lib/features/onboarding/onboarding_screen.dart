@@ -27,22 +27,19 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       primaryIcon: Icons.directions_bus_rounded,
       secondaryIcon: Icons.train_rounded,
       title: 'Track Bus and Train Services',
-      description:
-      'View transport services, updates, and journey details.',
+      description: 'View transport services, updates, and journey details.',
     ),
     OnboardingItem(
       primaryIcon: Icons.route_rounded,
       secondaryIcon: Icons.schedule_rounded,
       title: 'Plan Your Complete Journey',
-      description:
-      'Find routes, schedules, stops and arrival times.',
+      description: 'Find routes, schedules, stops and arrival times.',
     ),
     OnboardingItem(
       primaryIcon: Icons.confirmation_number_rounded,
       secondaryIcon: Icons.qr_code_2_rounded,
       title: 'Book and Travel Easily',
-      description:
-      'Book tickets, get a QR ticket, and manage upcoming journey',
+      description: 'Book tickets, get a QR ticket, and manage upcoming journey',
     ),
   ];
 
@@ -55,10 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       duration: const Duration(milliseconds: 750),
     );
 
-    _imageScale = Tween<double>(
-      begin: 0.72,
-      end: 1,
-    ).animate(
+    _imageScale = Tween<double>(begin: 0.72, end: 1).animate(
       CurvedAnimation(
         parent: _pageAnimationController,
         curve: Curves.easeOutBack,
@@ -70,15 +64,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       curve: Curves.easeIn,
     );
 
-    _contentSlide = Tween<Offset>(
-      begin: const Offset(0, 0.25),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _pageAnimationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _contentSlide =
+        Tween<Offset>(begin: const Offset(0, 0.25), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _pageAnimationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _pageAnimationController.forward();
   }
@@ -95,15 +87,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         transitionDuration: const Duration(milliseconds: 650),
         pageBuilder: (_, animation, _) {
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              ),
-            ),
+            position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+                .animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                ),
             child: const AuthScreen(),
           );
         },
@@ -141,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 padding: const EdgeInsets.only(right: 14, top: 4),
                 child: TextButton(
                   onPressed: _openLoginPage,
-                  child:  Text(
+                  child: Text(
                     'Skip',
                     style: AppTextStyles.bold.copyWith(
                       color: Color(0xFF0D5BD7),
@@ -176,15 +166,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFFEAF4FF),
-                                  Color(0xFFD4E9FF),
-                                ],
+                                colors: [Color(0xFFEAF4FF), Color(0xFFD4E9FF)],
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF0D5BD7)
-                                      .withOpacity(0.13),
+                                  color: const Color(
+                                    0xFF0D5BD7,
+                                  ).withOpacity(0.13),
                                   blurRadius: 32,
                                   offset: const Offset(0, 16),
                                 ),
@@ -228,7 +216,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 Text(
                                   page.title,
                                   textAlign: TextAlign.center,
-                                  style:  AppTextStyles.bold.copyWith(
+                                  style: AppTextStyles.bold.copyWith(
                                     fontSize: 27,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF0D5BD7),
@@ -256,47 +244,37 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                _pages.length,
-                    (index) {
-                  final selected = index == _currentPage;
+              children: List.generate(_pages.length, (index) {
+                final selected = index == _currentPage;
 
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: selected ? 30 : 9,
-                    height: 9,
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? const Color(0xFF0D5BD7)
-                          : const Color(0xFFCADDF5),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  );
-                },
-              ),
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: selected ? 30 : 9,
+                  height: 9,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? const Color(0xFF0D5BD7)
+                        : const Color(0xFFCADDF5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                );
+              }),
             ),
             const SizedBox(height: 28),
-        PrimaryButton(
+            PrimaryButton(
+              onPressed: _currentPage == _pages.length - 1
+                  ? _openLoginPage
+                  : _nextPage,
 
-          onPressed: _currentPage == _pages.length - 1
-              ? _openLoginPage
-              : _nextPage,
-
-          child: Text(
-            _currentPage == _pages.length - 1
-                ? 'Get Started'
-                : 'Next',
-            style: AppTextStyles.semiBold.copyWith(
-              fontSize: 17,
+              child: Text(
+                _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
+                style: AppTextStyles.semiBold.copyWith(fontSize: 17),
+              ),
             ),
-          ),
-        ),
-
           ],
         ),
       ),
     );
   }
 }
-
