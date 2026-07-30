@@ -3,6 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  cloud_firestore
+  firebase_auth
+  firebase_core
+  firebase_database
   geolocator_windows
   objectbox_flutter_libs
   permission_handler_windows

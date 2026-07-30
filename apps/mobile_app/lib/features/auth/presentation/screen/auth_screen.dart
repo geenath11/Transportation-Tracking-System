@@ -4,9 +4,94 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import 'otp_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+
+  final TextEditingController phoneController = TextEditingController();
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
+  Future<void> _sendOTP() async {
+
+    String phoneNumber = phoneController.text.trim();
+
+
+    if (phoneNumber.length != 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Enter a valid phone number"),
+        ),
+      );
+      return;
+    }
+
+
+    String formattedPhoneNumber =
+        "+94${phoneNumber.substring(1)}";
+
+
+    await _auth.verifyPhoneNumber(
+
+      phoneNumber: formattedPhoneNumber,
+
+
+      verificationCompleted: (PhoneAuthCredential credential) async {
+
+        await _auth.signInWithCredential(credential);
+
+      },
+
+
+      verificationFailed: (FirebaseAuthException e) {
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message ?? "OTP verification failed",
+            ),
+          ),
+        );
+
+      },
+
+
+      codeSent: (String verificationId, int? resendToken) {
+
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpScreen(
+
+              phoneNumber: formattedPhoneNumber,
+
+              verificationId: verificationId,
+
+            ),
+          ),
+        );
+
+
+      },
+
+
+      codeAutoRetrievalTimeout: (String verificationId) {},
+
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +156,8 @@ class AuthScreen extends StatelessWidget {
                                   width: double.infinity,
                                   height: 60,
                                   child: TextField(
+                                    controller: phoneController,
                                     keyboardType: TextInputType.number,
-
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                     ],
@@ -109,14 +194,7 @@ class AuthScreen extends StatelessWidget {
                                 AppButton(
                                   height: 60,
                                   width: double.infinity,
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const OtpScreen(),
-                                      ),
-                                    );
-                                  },
+                                 onPressed: _sendOTP,
 
                                   child: Text(
                                     "Continue",

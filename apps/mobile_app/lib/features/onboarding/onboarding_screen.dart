@@ -3,6 +3,7 @@ import 'widgets/onboarding_item.dart';
 import '../auth/presentation/screen/auth_screen.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/primary_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -80,7 +81,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _pageAnimationController.forward();
   }
 
-  void _openLoginPage() {
+  Future<void> _openLoginPage() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool('hasCompletedOnboarding', true);
+
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(

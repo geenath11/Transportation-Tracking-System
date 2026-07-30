@@ -6,8 +6,28 @@ import '../../../../core/widgets/custom_button.dart';
 import 'name_setup_page.dart';
 import 'package:pinput/pinput.dart';
 
-class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
+class OtpScreen extends StatefulWidget {
+  final String phoneNumber;
+  final String verificationId;
+
+  const OtpScreen({
+    super.key,
+    required this.phoneNumber,
+    required this.verificationId,
+  });
+
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  final TextEditingController otpController = TextEditingController();
+
+  @override
+  void dispose() {
+    otpController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +76,7 @@ class OtpScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  "071 234 5678",
+                                  widget.phoneNumber,
                                   style: AppTextStyles.bold.copyWith(
                                     color: AppColors.primary,
                                     fontSize: 25,
@@ -64,7 +84,8 @@ class OtpScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 19),
                                 Pinput(
-                                  length: 5,
+                                  controller: otpController,
+                                  length: 6,
 
                                   keyboardType: TextInputType.number,
 
@@ -236,7 +257,7 @@ class OtpScreen extends StatelessWidget {
 
                                     GestureDetector(
                                       onTap: () {
-                                        // Navigate back to phone number screen
+                                        Navigator.pop(context);
                                       },
 
                                       child: RichText(
