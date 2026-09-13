@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:transportation_tracking_system/core/theme/app_colors.dart";
 import "package:transportation_tracking_system/core/theme/app_text_styles.dart";
 
-Widget buildHeader() {
+Widget buildHeader(String userName) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
@@ -11,7 +11,7 @@ Widget buildHeader() {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Hello, Ravindu",
+              "Hello, $userName",
               style: AppTextStyles.semiBold.copyWith(
                 fontSize: 18,
               ),

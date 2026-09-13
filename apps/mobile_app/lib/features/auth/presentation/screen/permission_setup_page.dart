@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -25,7 +26,13 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
     _goToHome();
   }
 
-  void _goToHome() {
+  Future<void> _goToHome() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool('setup_completed', true);
+
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

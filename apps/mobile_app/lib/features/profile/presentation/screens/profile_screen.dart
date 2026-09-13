@@ -15,10 +15,7 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ProfileHeader(
-            name: "Ravindu Vimukthi",
-            role: "Passenger",
-            number: "0755570864",
-          ),
+            ),
           const SizedBox(height: 30),
           Center(
             child: ButtonProfile(

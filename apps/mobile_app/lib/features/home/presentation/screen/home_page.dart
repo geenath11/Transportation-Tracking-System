@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:transportation_tracking_system/core/theme/app_colors.dart';
+import 'package:transportation_tracking_system/core/services/user_profile_service.dart';
 
 import '../widgets/home_header.dart';
 import '../widgets/search_bar.dart';
@@ -26,58 +25,58 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       body: _currentIndex == 0
           ? SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/home_page_img_background.png',
-                    width: double.infinity,
-                    height: headerHeight,
-                    fit: BoxFit.cover,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: buildHeader(),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24),
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    buildSearchBar(context),
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Nearby Transport',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                    Stack(
+                      children: [
+                        Image.asset(
+                          'assets/images/home_page_img_background.png',
+                          width: double.infinity,
+                          height: headerHeight,
+                          fit: BoxFit.cover,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: buildHeader(UserProfileService.name),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildSearchBar(context),
+                          const SizedBox(height: 30),
+                          const Text(
+                            'Nearby Transport',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      )
-      : _currentIndex == 2
-        ? const TicketScreen()
+            )
+          : _currentIndex == 2
+          ? const TicketScreen()
           : _currentIndex == 3
           ? const ProfileScreen()
           : Center(
-        child: Text(
-          'Page $_currentIndex',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+              child: Text(
+                'Page $_currentIndex',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {

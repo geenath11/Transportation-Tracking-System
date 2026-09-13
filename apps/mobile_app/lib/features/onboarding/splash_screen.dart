@@ -1,6 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'onboarding_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../core/theme/app_text_styles.dart';
+import '../../features/auth/presentation/screen/permission_setup_page.dart';
+import '../../features/home/presentation/screen/home_page.dart';
+import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,14 +22,41 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadNextScreen() async {
-    // Wait time for splash screen
     await Future.delayed(const Duration(seconds: 3));
+
+    final user = FirebaseAuth.instance.currentUser;
+    final prefs = await SharedPreferences.getInstance();
+
+    final setupCompleted =
+        prefs.getBool('setup_completed') ?? false;
 
     if (!mounted) return;
 
+    if (user == null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const OnboardingScreen(),
+        ),
+      );
+      return;
+    }
+
+    if (!setupCompleted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const PermissionSetupPage(),
+        ),
+      );
+      return;
+    }
+
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+      MaterialPageRoute(
+        builder: (context) => const HomePage(),
+      ),
     );
   }
 
@@ -34,10 +66,12 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF3339EC), Color(0xFF4CA0F3)],
+            colors: [
+              Color(0xFF3339EC),
+              Color(0xFF4CA0F3),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -46,15 +80,15 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Cey Go",
+              'Cey Go',
               style: AppTextStyles.bold.copyWith(
                 fontSize: 65,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
-              "Smart Travel Starts Here",
+              'Smart Travel Starts Here',
               style: AppTextStyles.semiBold.copyWith(
                 fontSize: 20,
                 color: Colors.white.withValues(alpha: 0.6),
