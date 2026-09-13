@@ -32,7 +32,7 @@ class _TicketScreenState extends State<TicketScreen> {
               ),
               const SizedBox(height: 24),
               DestinationButton(
-                label: 'From',
+                label: '   From   ',
                 value: fromLocation,
                 onTap: () {
 

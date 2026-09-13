@@ -4,34 +4,45 @@ import "package:transportation_tracking_system/core/theme/app_text_styles.dart";
 
 Widget buildHeader() {
   return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Hello, Ravindu",
-            style: AppTextStyles.semiBold.copyWith(fontSize: 20),
-          ),
-
-          Text(
-            "Where to next?",
-            style: AppTextStyles.bold.copyWith(
-              fontSize: 30,
-              color: AppColors.primary,
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Hello, Ravindu",
+              style: AppTextStyles.semiBold.copyWith(
+                fontSize: 18,
+              ),
             ),
-          ),
-        ],
-      ),
-
-      IconButton(
-        icon: const Icon(
-          Icons.notifications_none,
-          color: Colors.black,
-          size: 40,
+            const SizedBox(height: 2),
+            Text(
+              "Where to next?",
+              style: AppTextStyles.bold.copyWith(
+                fontSize: 26,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
         ),
-
-        onPressed: () {},
+      ),
+      Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.notifications_none_rounded,
+            size: 26,
+          ),
+          color: AppColors.primary,
+          padding: EdgeInsets.zero,
+        ),
       ),
     ],
   );

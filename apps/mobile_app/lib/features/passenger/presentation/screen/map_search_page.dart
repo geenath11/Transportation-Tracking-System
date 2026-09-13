@@ -1,1457 +1,656 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:firebase_database/firebase_database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 
-
 class MapSearchPage extends StatefulWidget {
-
   const MapSearchPage({super.key});
 
-
   @override
-  State<MapSearchPage> createState() =>
-      _MapSearchPageState();
-
+  State<MapSearchPage> createState() => _MapSearchPageState();
 }
-
-
 
 class _MapSearchPageState extends State<MapSearchPage> {
+  final MapController _mapController = MapController();
+  final TextEditingController _searchController = TextEditingController();
 
+  final DatabaseReference _database =
+  FirebaseDatabase.instance.ref('live_locations');
 
-final MapController mapController =
-MapController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  StreamSubscription<DatabaseEvent>? _locationSubscription;
 
-final TextEditingController searchController =
-TextEditingController();
+  LatLng? _currentLocation;
+  LatLng? _searchedLocation;
 
+  List<Marker> _liveBusMarkers = [];
 
+  static const LatLng _defaultLocation = LatLng(
+    6.9934,
+    81.0550,
+  );
 
-LatLng? currentLocation;
+  static const double _defaultZoom = 13;
 
-LatLng? searchedLocation;
+  @override
+  void initState() {
+    super.initState();
 
+    _getCurrentLocation();
+    _listenForLiveBuses();
+  }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _locationSubscription?.cancel();
 
-final DatabaseReference _database =
-FirebaseDatabase.instance
-.ref("live_locations");
+    super.dispose();
+  }
 
+  Future<void> _getCurrentLocation() async {
+    final enabled = await Geolocator.isLocationServiceEnabled();
 
-
-StreamSubscription<DatabaseEvent>?
-_locationSubscription;
-
-
-
-final List<Marker> liveBusMarkers = [];
-
-
-
-
-final FirebaseFirestore firestore =
-FirebaseFirestore.instance;
-
-
-
-
-@override
-void initState() {
-
-super.initState();
-
-
-getCurrentLocation();
-
-
-listenForLiveBuses();
-
-}
-
-
-
-
-@override
-void dispose() {
-
-
-searchController.dispose();
-
-
-_locationSubscription?.cancel();
-
-
-super.dispose();
-
-}
-
-
-
-
-Future<void> getCurrentLocation() async {
-
-
-bool enabled =
-await Geolocator.isLocationServiceEnabled();
-
-
-if(!enabled){
-
-return;
-
-}
-
-
-
-LocationPermission permission =
-await Geolocator.checkPermission();
-
-
-
-if(permission ==
-LocationPermission.denied){
-
-
-permission =
-await Geolocator.requestPermission();
-
-
-}
-
-
-
-if(permission ==
-LocationPermission.denied ||
-permission ==
-LocationPermission.deniedForever){
-
-
-return;
-
-}
-
-
-
-
-Position position =
-await Geolocator.getCurrentPosition();
-
-
-
-
-setState(() {
-
-
-currentLocation =
-LatLng(
-position.latitude,
-position.longitude
-);
-
-
-});
-
-
-
-mapController.move(
-currentLocation!,
-16
-);
-
-}
-
-
-
-
-Future<void> searchLocation(
-String query
-) async {
-
-
-if(query.trim().isEmpty){
-
-return;
-
-}
-
-
-
-final url = Uri.parse(
-
-"https://nominatim.openstreetmap.org/search?q=$query&format=json&limit=1",
-
-);
-
-
-
-
-final response =
-await http.get(
-
-url,
-
-headers: {
-
-"User-Agent":
-"CeyGo/1.0"
-
-},
-
-);
-
-
-
-
-if(response.statusCode == 200){
-
-
-final data =
-jsonDecode(response.body);
-
-
-
-if(data.isNotEmpty){
-
-
-final lat =
-double.parse(
-data[0]["lat"]
-);
-
-
-
-final lon =
-double.parse(
-data[0]["lon"]
-);
-
-
-
-
-setState(() {
-
-
-searchedLocation =
-LatLng(
-lat,
-lon
-);
-
-
-});
-
-
-
-mapController.move(
-searchedLocation!,
-16
-);
-
-
-}
-
-}
-
-}
-
-
-
-
-  Future<Map<String,dynamic>?> getRouteData(
-      String routeId
-      ) async {
-
-
-    // Temporary mapping
-
-    Map<String,String> routeMapping = {
-
-      "route_001":
-      "Zl21qkgaUAFZvDkgWCZA",
-
-    };
-
-
-    String? documentId =
-    routeMapping[routeId];
-
-
-    if(documentId == null){
-
-      return null;
-
+    if (!enabled) {
+      return;
     }
 
+    var permission = await Geolocator.checkPermission();
 
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
 
-    final snapshot =
-    await firestore
-        .collection("routes")
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return;
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition();
+
+      if (!mounted) {
+        return;
+      }
+
+      final location = LatLng(
+        position.latitude,
+        position.longitude,
+      );
+
+      setState(() {
+        _currentLocation = location;
+      });
+
+      _mapController.move(
+        location,
+        16,
+      );
+    } catch (_) {
+      return;
+    }
+  }
+
+  Future<void> _searchLocation(String query) async {
+    final trimmedQuery = query.trim();
+
+    if (trimmedQuery.isEmpty) {
+      return;
+    }
+
+    final url = Uri.https(
+      'nominatim.openstreetmap.org',
+      '/search',
+      {
+        'q': trimmedQuery,
+        'format': 'json',
+        'limit': '1',
+      },
+    );
+
+    try {
+      final response = await http.get(
+        url,
+        headers: const {
+          'User-Agent': 'CeyGo/1.0',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        return;
+      }
+
+      final data = jsonDecode(response.body);
+
+      if (data is! List || data.isEmpty) {
+        return;
+      }
+
+      final result = data.first;
+
+      final latitude = double.tryParse(
+        result['lat'].toString(),
+      );
+
+      final longitude = double.tryParse(
+        result['lon'].toString(),
+      );
+
+      if (latitude == null || longitude == null) {
+        return;
+      }
+
+      final location = LatLng(
+        latitude,
+        longitude,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _searchedLocation = location;
+      });
+
+      _mapController.move(
+        location,
+        16,
+      );
+    } catch (_) {
+      return;
+    }
+  }
+
+  Future<Map<String, dynamic>?> _getRouteData(
+      String? routeId,
+      ) async {
+    if (routeId == null) {
+      return null;
+    }
+
+    const routeMapping = {
+      'route_001': 'Zl21qkgaUAFZvDkgWCZA',
+    };
+
+    final documentId = routeMapping[routeId];
+
+    if (documentId == null) {
+      return null;
+    }
+
+    final snapshot = await _firestore
+        .collection('routes')
         .doc(documentId)
         .get();
 
-
-
-    if(snapshot.exists){
-
-      return snapshot.data();
-
+    if (!snapshot.exists) {
+      return null;
     }
 
-
-
-    return null;
-
+    return snapshot.data();
   }
 
+  void _listenForLiveBuses() {
+    _locationSubscription = _database.onValue.listen(
+          (event) {
+        final data = event.snapshot.value;
 
+        if (data is! Map) {
+          return;
+        }
 
-void listenForLiveBuses(){
+        final markers = <Marker>[];
 
+        data.forEach(
+              (busId, value) {
+            if (value is! Map) {
+              return;
+            }
 
+            final bus = Map<dynamic, dynamic>.from(value);
 
-_locationSubscription =
-_database.onValue.listen(
-(event){
+            final latitude = (bus['latitude'] as num?)?.toDouble();
+            final longitude = (bus['longitude'] as num?)?.toDouble();
 
+            if (latitude == null || longitude == null) {
+              return;
+            }
 
+            final heading = (bus['heading'] as num?)?.toDouble() ?? 0;
 
-final data =
-event.snapshot.value;
+            markers.add(
+              Marker(
+                point: LatLng(
+                  latitude,
+                  longitude,
+                ),
+                width: 70,
+                height: 70,
+                child: GestureDetector(
+                  onTap: () async {
+                    final route = await _getRouteData(
+                      bus['routeId']?.toString(),
+                    );
 
+                    if (!mounted) {
+                      return;
+                    }
 
+                    _showBusInformation(
+                      busId.toString(),
+                      bus,
+                      route,
+                    );
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: 0.12,
+                              ),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          busId.toString(),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Transform.rotate(
+                        angle: heading * 3.14159 / 180,
+                        child: Image.asset(
+                          'assets/images/bus_marker.png',
+                          width: 38,
+                          height: 38,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
 
-if(data == null){
+        if (!mounted) {
+          return;
+        }
 
-return;
+        setState(() {
+          _liveBusMarkers = markers;
+        });
+      },
+    );
+  }
 
+  void _showBusInformation(
+      String busId,
+      Map<dynamic, dynamic> bus,
+      Map<String, dynamic>? route,
+      ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.42,
+          minChildSize: 0.28,
+          maxChildSize: 0.75,
+          builder: (
+              context,
+              scrollController,
+              ) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+              ),
+              child: ListView(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(
+                  20,
+                  12,
+                  20,
+                  30,
+                ),
+                children: [
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(
+                            alpha: 0.08,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Image.asset(
+                          'assets/images/bus_marker.png',
+                        ),
+                      ),
+
+                      const SizedBox(width: 14),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              busId,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              route?['routeNumber']?.toString() ??
+                                  'Route information unavailable',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  _infoRow(
+                    'Route',
+                    '${route?['start'] ?? 'Unknown'} → '
+                        '${route?['destination'] ?? 'Unknown'}',
+                  ),
+
+                  _infoRow(
+                    'Distance',
+                    '${route?['distance'] ?? 0} km',
+                  ),
+
+                  _infoRow(
+                    'Speed',
+                    '${bus['speed'] ?? 0} km/h',
+                  ),
+
+                  _infoRow(
+                    'Direction',
+                    '${bus['heading'] ?? 0}°',
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  const Text(
+                    'Stops',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  if (route?['stops'] is List)
+                    ...(route!['stops'] as List).map(
+                          (stop) {
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(
+                            Icons.location_on_rounded,
+                            color: AppColors.primary,
+                          ),
+                          title: Text(
+                            stop['name']?.toString() ?? '',
+                          ),
+                          trailing: Text(
+                            stop['eta']?.toString() ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                  const SizedBox(height: 12),
+
+                  _infoRow(
+                    'Last Update',
+                    _formatLastUpdate(
+                      bus['updatedAt'],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  String _formatLastUpdate(dynamic timestamp) {
+    if (timestamp is! num) {
+      return 'Unknown';
+    }
+
+    return DateTime.fromMillisecondsSinceEpoch(
+      timestamp.toInt(),
+    ).toString();
+  }
+
+  Widget _infoRow(
+      String title,
+      String value,
+      ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 8,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _mapController,
+            options: const MapOptions(
+              initialCenter: _defaultLocation,
+              initialZoom: _defaultZoom,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName:
+                'com.ceygo.transportation',
+              ),
+
+              MarkerLayer(
+                markers: [
+                  if (_currentLocation != null)
+                    Marker(
+                      point: _currentLocation!,
+                      width: 50,
+                      height: 50,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: 0.15,
+                              ),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.my_location_rounded,
+                          color: AppColors.primary,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+
+                  if (_searchedLocation != null)
+                    const Marker(
+                      point: _defaultLocation,
+                      width: 50,
+                      height: 50,
+                      child: Icon(
+                        Icons.location_pin,
+                        color: Colors.red,
+                        size: 45,
+                      ),
+                    ),
+
+                  ..._liveBusMarkers,
+                ],
+              ),
+            ],
+          ),
+
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                0,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                elevation: 8,
+                shadowColor: Colors.black.withValues(
+                  alpha: 0.15,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                child: TextField(
+                  controller: _searchController,
+                  onSubmitted: _searchLocation,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: 'Search destination',
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade500,
+                    ),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.primary,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide.none,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            right: 20,
+            bottom: 30,
+            child: FloatingActionButton(
+              heroTag: 'currentLocationButton',
+              backgroundColor: Colors.white,
+              foregroundColor: AppColors.primary,
+              elevation: 6,
+              onPressed: _getCurrentLocation,
+              child: const Icon(
+                Icons.my_location_rounded,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
-
-
-
-
-final buses =
-Map<dynamic,dynamic>.from(
-data as Map
-);
-
-
-
-
-final List<Marker> markers =
-[];
-
-
-
-
-
-buses.forEach(
-(busId,value){
-
-
-
-final bus =
-Map<dynamic,dynamic>.from(
-value as Map
-);
-
-
-
-
-if(bus["latitude"] != null &&
-bus["longitude"] != null){
-
-
-
-
-
-final latitude =
-(bus["latitude"] as num)
-.toDouble();
-
-
-
-final longitude =
-(bus["longitude"] as num)
-.toDouble();
-
-
-
-
-
-final heading =
-(bus["heading"] ?? 0)
-.toDouble();
-
-
-
-
-
-
-markers.add(
-
-
-Marker(
-
-point:
-LatLng(
-latitude,
-longitude
-),
-
-
-
-width:80,
-
-height:80,
-
-
-
-
-child:
-GestureDetector(
-
-
-
-onTap: () async {
-
-
-
-final route =
-await getRouteData(
-bus["routeId"]
-);
-
-
-
-showBusInformation(
-
-busId.toString(),
-
-bus,
-
-route,
-
-);
-
-
-},
-
-
-
-
-child:
-
-Column(
-
-mainAxisSize:
-MainAxisSize.min,
-
-
-
-children: [
-
-
-
-Container(
-
-padding:
-const EdgeInsets.symmetric(
-horizontal:4
-),
-
-
-color:
-Colors.white,
-
-
-
-child:
-Text(
-
-busId.toString(),
-
-style:
-const TextStyle(
-
-fontSize:12,
-
-fontWeight:
-FontWeight.bold,
-
-),
-
-),
-
-),
-
-
-
-
-
-
-Transform.rotate(
-
-
-angle:
-heading *
-3.14159 /
-180,
-
-
-
-child:
-
-Image.asset(
-
-"assets/images/bus_marker.png",
-
-
-width:40,
-
-
-height:40,
-
-
-),
-
-
-),
-
-
-
-],
-
-
-),
-
-
-),
-
-
-),
-
-
-);
-
-}
-
-
-});
-
-
-
-
-setState((){
-
-
-liveBusMarkers
-
-..clear()
-
-..addAll(markers);
-
-
-});
-
-
-
-});
-
-
-
-}
-
-
-void showBusInformation(
-String busId,
-Map<dynamic, dynamic> bus,
-Map<String, dynamic>? route,
-) {
-
-
-showModalBottomSheet(
-
-context: context,
-
-isScrollControlled: true,
-
-backgroundColor: Colors.transparent,
-
-
-builder: (context){
-
-
-return DraggableScrollableSheet(
-
-
-initialChildSize: 0.40,
-
-minChildSize: 0.25,
-
-maxChildSize: 0.70,
-
-
-
-builder:
-(context, scrollController){
-
-
-
-return Container(
-
-
-decoration:
-const BoxDecoration(
-
-
-color:
-Colors.white,
-
-
-
-borderRadius:
-BorderRadius.only(
-
-
-topLeft:
-Radius.circular(30),
-
-
-topRight:
-Radius.circular(30),
-
-
-),
-
-
-),
-
-
-
-
-child:
-SingleChildScrollView(
-
-
-controller:
-scrollController,
-
-
-
-child:
-Padding(
-
-
-padding:
-const EdgeInsets.all(20),
-
-
-
-child:
-Column(
-
-
-
-crossAxisAlignment:
-CrossAxisAlignment.start,
-
-
-
-children: [
-
-
-
-Center(
-
-
-child:
-Container(
-
-
-width:45,
-
-height:5,
-
-
-decoration:
-BoxDecoration(
-
-
-color:
-Colors.grey.shade400,
-
-
-borderRadius:
-BorderRadius.circular(20),
-
-
-),
-
-
-),
-
-
-),
-
-
-
-
-const SizedBox(height:20),
-
-
-
-
-
-Row(
-
-
-children: [
-
-
-
-Image.asset(
-
-"assets/images/bus_marker.png",
-
-width:45,
-
-height:45,
-
-),
-
-
-
-
-const SizedBox(width:15),
-
-
-
-
-Text(
-
-busId,
-
-
-style:
-const TextStyle(
-
-fontSize:24,
-
-fontWeight:
-FontWeight.bold,
-
-),
-
-
-),
-
-
-],
-
-
-),
-
-
-
-
-const SizedBox(height:25),
-
-
-
-
-
-
-_infoRow(
-
-"Route",
-
-"${route?["start"] ?? "Unknown"} → ${route?["destination"] ?? "Unknown"}",
-
-),
-
-
-
-
-_infoRow(
-
-"Route Number",
-
-route?["routeNumber"] ?? "Unknown",
-
-),
-
-
-
-
-
-_infoRow(
-
-"Distance",
-
-"${route?["distance"] ?? 0} km",
-
-),
-
-
-
-
-
-_infoRow(
-
-"Speed",
-
-"${bus["speed"] ?? 0} km/h",
-
-),
-
-
-
-
-_infoRow(
-
-"Direction",
-
-"${bus["heading"] ?? 0}°",
-
-),
-
-
-
-
-
-const SizedBox(height:20),
-
-
-
-
-const Text(
-
-"Stops",
-
-style:
-TextStyle(
-
-fontSize:20,
-
-fontWeight:
-FontWeight.bold,
-
-),
-
-),
-
-
-
-
-
-const SizedBox(height:10),
-
-
-
-
-
-if(route?["stops"] != null)
-
-...(route!["stops"] as List)
-.map((stop){
-
-
-return ListTile(
-
-
-
-contentPadding:
-EdgeInsets.zero,
-
-
-
-leading:
-const Icon(
-
-Icons.location_on,
-
-color:
-AppColors.primary,
-
-),
-
-
-
-
-title:
-Text(
-
-stop["name"] ?? "",
-
-),
-
-
-
-
-trailing:
-Text(
-
-stop["eta"] ?? "",
-
-style:
-const TextStyle(
-
-fontWeight:
-FontWeight.bold,
-
-),
-
-),
-
-
-
-);
-
-
-
-}),
-
-
-
-
-const SizedBox(height:20),
-
-
-
-
-
-_infoRow(
-
-"Last Update",
-
-DateTime
-.fromMillisecondsSinceEpoch(
-
-bus["updatedAt"] ?? 0,
-
-).toString(),
-
-),
-
-
-
-
-],
-
-
-),
-
-
-),
-
-
-),
-
-
-);
-
-},
-
-);
-
-
-},
-
-
-);
-
-
-}
-
-
-
-
-
-Widget _infoRow(
-
-String title,
-
-String value,
-
-){
-
-
-
-return Padding(
-
-
-padding:
-const EdgeInsets.symmetric(
-vertical:8
-),
-
-
-
-
-child:
-Row(
-
-
-mainAxisAlignment:
-MainAxisAlignment.spaceBetween,
-
-
-
-children: [
-
-
-
-Text(
-
-
-title,
-
-
-style:
-const TextStyle(
-
-color:
-Colors.grey,
-
-fontSize:16,
-
-),
-
-
-
-),
-
-
-
-
-
-Flexible(
-
-child:
-Text(
-
-
-value,
-
-
-textAlign:
-TextAlign.right,
-
-
-
-style:
-const TextStyle(
-
-fontSize:16,
-
-fontWeight:
-FontWeight.w600,
-
-),
-
-
-
-),
-
-),
-
-
-
-],
-
-
-),
-
-
-
-);
-
-
-}
-
-
-
-
-
-
-
-@override
-Widget build(BuildContext context) {
-
-
-return Scaffold(
-
-
-
-body:
-Stack(
-
-
-
-children: [
-
-
-
-FlutterMap(
-
-
-
-mapController:
-mapController,
-
-
-
-options:
-MapOptions(
-
-
-initialCenter:
-const LatLng(
-
-6.9934,
-
-81.0550,
-
-),
-
-
-
-initialZoom:
-13,
-
-
-),
-
-
-
-
-children: [
-
-
-
-TileLayer(
-
-
-
-urlTemplate:
-
-"https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-
-
-
-
-userAgentPackageName:
-
-"com.ceygo.transportation",
-
-
-
-),
-
-
-
-
-
-
-MarkerLayer(
-
-
-
-markers:
-
-[
-
-
-
-if(currentLocation != null)
-
-
-Marker(
-
-
-
-point:
-currentLocation!,
-
-
-
-width:50,
-
-height:50,
-
-
-
-child:
-const Icon(
-
-Icons.pin_drop,
-
-color:
-AppColors.primary,
-
-size:35,
-
-),
-
-
-
-),
-
-
-
-
-
-if(searchedLocation != null)
-
-
-
-Marker(
-
-
-
-point:
-searchedLocation!,
-
-
-
-width:50,
-
-height:50,
-
-
-
-child:
-const Icon(
-
-Icons.location_pin,
-
-color:
-Colors.red,
-
-size:45,
-
-),
-
-
-
-),
-
-
-
-
-]
-
-..addAll(liveBusMarkers),
-
-
-
-
-),
-
-
-
-],
-
-
-
-),
-
-
-
-
-
-
-SafeArea(
-
-
-
-child:
-Padding(
-
-
-
-padding:
-const EdgeInsets.all(20),
-
-
-
-
-child:
-TextField(
-
-
-
-controller:
-searchController,
-
-
-
-onSubmitted:
-searchLocation,
-
-
-
-decoration:
-InputDecoration(
-
-
-
-hintText:
-"Search destination",
-
-
-
-
-prefixIcon:
-IconButton(
-
-
-
-icon:
-const Icon(
-
-Icons.search,
-
-color:
-AppColors.primary,
-
-),
-
-
-
-onPressed: (){
-
-
-
-searchLocation(
-
-searchController.text
-
-);
-
-
-
-},
-
-
-
-),
-
-
-
-filled:true,
-
-
-fillColor:
-Colors.white,
-
-
-
-
-border:
-OutlineInputBorder(
-
-
-
-borderRadius:
-BorderRadius.circular(20),
-
-
-
-borderSide:
-BorderSide.none,
-
-
-
-),
-
-
-
-
-),
-
-
-
-),
-
-
-
-),
-
-
-
-),
-
-
-
-
-Positioned(
-
-
-
-bottom:30,
-
-
-right:20,
-
-
-
-child:
-FloatingActionButton(
-
-
-
-backgroundColor:
-AppColors.primary,
-
-
-
-onPressed:
-getCurrentLocation,
-
-
-
-child:
-const Icon(
-
-Icons.my_location,
-
-color:
-Colors.white,
-
-),
-
-
-
-),
-
-
-
-),
-
-
-
-],
-
-
-
-),
-
-
-
-);
-
-
-}}

@@ -103,3 +103,4 @@ shared/**/build/
 .github/workflows/*.log
 apps/mobile_app/firebase.json
 apps/mobile_app/lib/firebase_options.dart
+apps/mobile_app/android/app/google-services.json

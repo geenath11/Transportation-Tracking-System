@@ -1,6 +1,4 @@
-<<<<<<< Updated upstream
 
-=======
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void _startOtpTimer() {
     _otpTimer?.cancel();
-    _remainingSeconds = 59;
+    _remainingSeconds = 40;
     _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds <= 0) {
         timer.cancel();
@@ -337,4 +335,4 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 }
->>>>>>> Stashed changes
+

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'onboarding_screen.dart';
-import '../auth/presentation/screen/auth_screen.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -20,26 +17,15 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadNextScreen() async {
+    // Wait time for splash screen
     await Future.delayed(const Duration(seconds: 3));
-
-    final prefs = await SharedPreferences.getInstance();
-
-    final hasCompletedOnboarding =
-        prefs.getBool('hasCompletedOnboarding') ?? false;
 
     if (!mounted) return;
 
-    if (hasCompletedOnboarding) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AuthScreen()),
-      );
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-      );
-    }
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+    );
   }
 
   @override

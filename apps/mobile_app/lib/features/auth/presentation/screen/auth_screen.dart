@@ -5,19 +5,12 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/custom_button.dart';
-<<<<<<< Updated upstream
-=======
 import 'otp_screen.dart';
->>>>>>> Stashed changes
 
-import 'login_screen.dart';
-
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
   @override
-<<<<<<< Updated upstream
-=======
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
@@ -52,7 +45,6 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: formattedPhoneNumber,
-
         verificationCompleted: (PhoneAuthCredential credential) async {
           try {
             await _auth.signInWithCredential(credential);
@@ -74,7 +66,6 @@ class _AuthScreenState extends State<AuthScreen> {
             );
           }
         },
-
         verificationFailed: (FirebaseAuthException e) {
           if (!mounted) return;
 
@@ -86,7 +77,6 @@ class _AuthScreenState extends State<AuthScreen> {
             e.message ?? 'OTP verification failed',
           );
         },
-
         codeSent: (String verificationId, int? resendToken) {
           if (!mounted) return;
 
@@ -104,7 +94,6 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           );
         },
-
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
     } on FirebaseAuthException catch (e) {
@@ -141,7 +130,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   @override
->>>>>>> Stashed changes
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -183,7 +171,6 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ],
                           ),
-
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             transform: Matrix4.translationValues(
@@ -198,18 +185,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                   style: AppTextStyles.semiBold,
                                 ),
                                 const SizedBox(height: 19),
-
                                 SizedBox(
                                   width: double.infinity,
                                   height: 60,
                                   child: TextField(
-<<<<<<< Updated upstream
-                                    keyboardType: TextInputType.number,
-
-=======
                                     controller: _phoneController,
                                     keyboardType: TextInputType.phone,
->>>>>>> Stashed changes
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                     ],
@@ -238,25 +219,10 @@ class _AuthScreenState extends State<AuthScreen> {
                                     ),
                                   ),
                                 ),
-
                                 const SizedBox(height: 19),
-
                                 AppButton(
                                   height: 60,
                                   width: double.infinity,
-<<<<<<< Updated upstream
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const OtpScreen(),
-                                      ),
-                                    );
-                                  },
-
-                                  child: Text(
-                                    "Continue",
-=======
                                   onPressed: _sendOTP,
                                   child: _isLoading
                                       ? const SizedBox(
@@ -269,15 +235,13 @@ class _AuthScreenState extends State<AuthScreen> {
                                   )
                                       : Text(
                                     'Continue',
->>>>>>> Stashed changes
-                                    style: AppTextStyles.semiBold.copyWith(
+                                    style:
+                                    AppTextStyles.semiBold.copyWith(
                                       fontSize: 17,
                                     ),
                                   ),
                                 ),
-
                                 const SizedBox(height: 30),
-
                                 Row(
                                   children: [
                                     const Icon(
@@ -289,8 +253,8 @@ class _AuthScreenState extends State<AuthScreen> {
                                     Expanded(
                                       child: Text(
                                         "We'll send you an OTP to verify your number",
-                                        style: AppTextStyles.semiBold
-                                            .copyWith(
+                                        style:
+                                        AppTextStyles.semiBold.copyWith(
                                           color: Colors.grey,
                                           fontSize: 13,
                                         ),
@@ -301,14 +265,12 @@ class _AuthScreenState extends State<AuthScreen> {
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 100),
                         ],
                       ),
                     ),
                   ),
                 ),
-
                 Positioned(
                   left: 24,
                   right: 24,

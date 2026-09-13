@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+
 import 'package:transportation_tracking_system/core/theme/app_colors.dart';
-import '../../../passenger/presentation/screen/map_search_page.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -12,143 +12,106 @@ class CustomBottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
-  final List<_NavItem> items = const [
-    _NavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: "Home"),
-
+  static const List<_NavItem> _items = [
+    _NavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
     _NavItem(
       icon: Icons.search_outlined,
-      activeIcon: Icons.search,
-      label: "Search",
+      activeIcon: Icons.search_rounded,
+      label: 'Search',
     ),
-
     _NavItem(
       icon: Icons.confirmation_num_outlined,
-      activeIcon: Icons.confirmation_num,
-      label: "Tickets",
+      activeIcon: Icons.confirmation_num_rounded,
+      label: 'Tickets',
     ),
-
     _NavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person,
-      label: "Profile",
+      icon: Icons.person_outline_rounded,
+      activeIcon: Icons.person_rounded,
+      label: 'Profile',
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 22),
-
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Container(
-        height: 62,
-
+        height: 68,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.92),
-
-          borderRadius: BorderRadius.circular(80),
-
+          color: Colors.white.withValues(alpha: 0.96),
+          borderRadius: BorderRadius.circular(34),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
-
-              blurRadius: 10,
-
-              spreadRadius: 1,
-
-              offset: const Offset(0, 15),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             ),
-
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-
-              blurRadius: 10,
-
-              offset: const Offset(0, -2),
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
             ),
           ],
         ),
+        child: Row(
+          children: List.generate(
+            _items.length,
+            (index) => Expanded(child: _buildNavItem(index)),
+          ),
+        ),
+      ),
+    );
+  }
 
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
+  Widget _buildNavItem(int index) {
+    final item = _items[index];
+    final selected = currentIndex == index;
 
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-            children: List.generate(items.length, (index) {
-              final bool selected = currentIndex == index;
-
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-
-                onTap: () {
-                  onTap(index);
-                },
-
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-
-                  curve: Curves.easeOutCubic,
-
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 25,
-
-                    vertical: 4,
-                  ),
-
-                  decoration: BoxDecoration(
-                    color: selected
-                        ? AppColors.primary.withOpacity(0.12)
-                        : Colors.transparent,
-
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-
-                    children: [
-                      AnimatedScale(
-                        scale: selected ? 1.4 : 1.0,
-
-                        duration: const Duration(milliseconds: 100),
-
-                        child: Icon(
-                          selected
-                              ? items[index].activeIcon
-                              : items[index].icon,
-
-                          size: 26,
-
-                          color: selected
-                              ? AppColors.primary
-                              : Colors.grey.shade600,
-                        ),
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-
-                        style: TextStyle(
-                          fontSize: 12,
-
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w400,
-
-                          color: selected
-                              ? AppColors.primary
-                              : Colors.grey.shade500,
-                        ),
-
-                        child: Text(items[index].label),
-                      ),
-                    ],
-                  ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(28),
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.primary.withValues(alpha: 0.10)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: selected ? 1.12 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                child: Icon(
+                  selected ? item.activeIcon : item.icon,
+                  size: 25,
+                  color: selected ? AppColors.primary : Colors.grey.shade600,
                 ),
-              );
-            }),
+              ),
+              const SizedBox(height: 3),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                  color: selected ? AppColors.primary : Colors.grey.shade600,
+                ),
+                child: Text(item.label),
+              ),
+            ],
           ),
         ),
       ),
@@ -158,16 +121,12 @@ class CustomBottomNavBar extends StatelessWidget {
 
 class _NavItem {
   final IconData icon;
-
   final IconData activeIcon;
-
   final String label;
 
   const _NavItem({
     required this.icon,
-
     required this.activeIcon,
-
     required this.label,
   });
 }
