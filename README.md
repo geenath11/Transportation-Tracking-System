@@ -7,12 +7,16 @@
   A Flutter-based mobile application for passengers, drivers, and conductors.
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-02569B?style=flat&logo=flutter&logoColor=white" alt="Flutter">
-  <img src="https://img.shields.io/badge/Dart-0175C2?style=flat&logo=dart&logoColor=white" alt="Dart">
-  <img src="https://img.shields.io/badge/Firebase-Backend-FFCA28?style=flat&logo=firebase&logoColor=black" alt="Firebase">
-  <img src="https://img.shields.io/badge/Riverpod-State%20Management-1389FD?style=flat" alt="Riverpod">
-</p>
+
+<div align="center">
+
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Riverpod](https://img.shields.io/badge/Riverpod-State%20Management-1389FD?style=for-the-badge)
+
+</div>
+
 <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" />
 
 ## About
@@ -41,6 +45,10 @@ The mobile application is developed using **Flutter** and connects to **Firebase
 * Complaints and feedback
 * Emergency features
 * User profile management
+* Date selection for journey planning
+* Destination selection
+* Route selection
+* Route and trip information display
 
 ### Driver / Conductor
 
@@ -503,6 +511,21 @@ Then verify the application builds successfully.
 **Development**
 
 The CeyGo mobile application is currently under active development as part of the Smart Public Transportation Information System.
+
+Current development includes:
+
+* Passenger home and navigation interfaces
+* Destination and route selection
+* Date selection for journey planning
+* Route and trip information display
+* User profile management
+* Firebase integration
+* Authentication and application state management
+
+Additional transportation, booking, live tracking, notification, and other system features are being developed incrementally.
+
+
+
 
 ---
 
