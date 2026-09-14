@@ -27,17 +27,14 @@ class _SplashScreenState extends State<SplashScreen> {
     final user = FirebaseAuth.instance.currentUser;
     final prefs = await SharedPreferences.getInstance();
 
-    final setupCompleted =
-        prefs.getBool('setup_completed') ?? false;
+    final setupCompleted = prefs.getBool('setup_completed') ?? false;
 
     if (!mounted) return;
 
     if (user == null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const OnboardingScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
       );
       return;
     }
@@ -45,18 +42,14 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!setupCompleted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => const PermissionSetupPage(),
-        ),
+        MaterialPageRoute(builder: (context) => const PermissionSetupPage()),
       );
       return;
     }
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => const HomePage(),
-      ),
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
   }
 
@@ -68,10 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF3339EC),
-              Color(0xFF4CA0F3),
-            ],
+            colors: [Color(0xFF3339EC), Color(0xFF4CA0F3)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

@@ -22,8 +22,9 @@ class _MapSearchPageState extends State<MapSearchPage> {
   final MapController _mapController = MapController();
   final TextEditingController _searchController = TextEditingController();
 
-  final DatabaseReference _database =
-  FirebaseDatabase.instance.ref('live_locations');
+  final DatabaseReference _database = FirebaseDatabase.instance.ref(
+    'live_locations',
+  );
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -34,10 +35,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
   List<Marker> _liveBusMarkers = [];
 
-  static const LatLng _defaultLocation = LatLng(
-    6.9934,
-    81.0550,
-  );
+  static const LatLng _defaultLocation = LatLng(6.9934, 81.0550);
 
   static const double _defaultZoom = 13;
 
@@ -82,19 +80,13 @@ class _MapSearchPageState extends State<MapSearchPage> {
         return;
       }
 
-      final location = LatLng(
-        position.latitude,
-        position.longitude,
-      );
+      final location = LatLng(position.latitude, position.longitude);
 
       setState(() {
         _currentLocation = location;
       });
 
-      _mapController.move(
-        location,
-        16,
-      );
+      _mapController.move(location, 16);
     } catch (_) {
       return;
     }
@@ -107,22 +99,16 @@ class _MapSearchPageState extends State<MapSearchPage> {
       return;
     }
 
-    final url = Uri.https(
-      'nominatim.openstreetmap.org',
-      '/search',
-      {
-        'q': trimmedQuery,
-        'format': 'json',
-        'limit': '1',
-      },
-    );
+    final url = Uri.https('nominatim.openstreetmap.org', '/search', {
+      'q': trimmedQuery,
+      'format': 'json',
+      'limit': '1',
+    });
 
     try {
       final response = await http.get(
         url,
-        headers: const {
-          'User-Agent': 'CeyGo/1.0',
-        },
+        headers: const {'User-Agent': 'CeyGo/1.0'},
       );
 
       if (response.statusCode != 200) {
@@ -137,22 +123,15 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
       final result = data.first;
 
-      final latitude = double.tryParse(
-        result['lat'].toString(),
-      );
+      final latitude = double.tryParse(result['lat'].toString());
 
-      final longitude = double.tryParse(
-        result['lon'].toString(),
-      );
+      final longitude = double.tryParse(result['lon'].toString());
 
       if (latitude == null || longitude == null) {
         return;
       }
 
-      final location = LatLng(
-        latitude,
-        longitude,
-      );
+      final location = LatLng(latitude, longitude);
 
       if (!mounted) {
         return;
@@ -162,25 +141,18 @@ class _MapSearchPageState extends State<MapSearchPage> {
         _searchedLocation = location;
       });
 
-      _mapController.move(
-        location,
-        16,
-      );
+      _mapController.move(location, 16);
     } catch (_) {
       return;
     }
   }
 
-  Future<Map<String, dynamic>?> _getRouteData(
-      String? routeId,
-      ) async {
+  Future<Map<String, dynamic>?> _getRouteData(String? routeId) async {
     if (routeId == null) {
       return null;
     }
 
-    const routeMapping = {
-      'route_001': 'Zl21qkgaUAFZvDkgWCZA',
-    };
+    const routeMapping = {'route_001': 'Zl21qkgaUAFZvDkgWCZA'};
 
     final documentId = routeMapping[routeId];
 
@@ -201,118 +173,103 @@ class _MapSearchPageState extends State<MapSearchPage> {
   }
 
   void _listenForLiveBuses() {
-    _locationSubscription = _database.onValue.listen(
-          (event) {
-        final data = event.snapshot.value;
+    _locationSubscription = _database.onValue.listen((event) {
+      final data = event.snapshot.value;
 
-        if (data is! Map) {
+      if (data is! Map) {
+        return;
+      }
+
+      final markers = <Marker>[];
+
+      data.forEach((busId, value) {
+        if (value is! Map) {
           return;
         }
 
-        final markers = <Marker>[];
+        final bus = Map<dynamic, dynamic>.from(value);
 
-        data.forEach(
-              (busId, value) {
-            if (value is! Map) {
-              return;
-            }
+        final latitude = (bus['latitude'] as num?)?.toDouble();
+        final longitude = (bus['longitude'] as num?)?.toDouble();
 
-            final bus = Map<dynamic, dynamic>.from(value);
+        if (latitude == null || longitude == null) {
+          return;
+        }
 
-            final latitude = (bus['latitude'] as num?)?.toDouble();
-            final longitude = (bus['longitude'] as num?)?.toDouble();
+        final heading = (bus['heading'] as num?)?.toDouble() ?? 0;
 
-            if (latitude == null || longitude == null) {
-              return;
-            }
+        markers.add(
+          Marker(
+            point: LatLng(latitude, longitude),
+            width: 70,
+            height: 70,
+            child: GestureDetector(
+              onTap: () async {
+                final route = await _getRouteData(bus['routeId']?.toString());
 
-            final heading = (bus['heading'] as num?)?.toDouble() ?? 0;
+                if (!mounted) {
+                  return;
+                }
 
-            markers.add(
-              Marker(
-                point: LatLng(
-                  latitude,
-                  longitude,
-                ),
-                width: 70,
-                height: 70,
-                child: GestureDetector(
-                  onTap: () async {
-                    final route = await _getRouteData(
-                      bus['routeId']?.toString(),
-                    );
-
-                    if (!mounted) {
-                      return;
-                    }
-
-                    _showBusInformation(
+                _showBusInformation(busId.toString(), bus, route);
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Text(
                       busId.toString(),
-                      bus,
-                      route,
-                    );
-                  },
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(
-                                alpha: 0.12,
-                              ),
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          busId.toString(),
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(height: 2),
-                      Transform.rotate(
-                        angle: heading * 3.14159 / 180,
-                        child: Image.asset(
-                          'assets/images/bus_marker.png',
-                          width: 38,
-                          height: 38,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 2),
+                  Transform.rotate(
+                    angle: heading * 3.14159 / 180,
+                    child: Image.asset(
+                      'assets/images/bus_marker.png',
+                      width: 38,
+                      height: 38,
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+          ),
         );
+      });
 
-        if (!mounted) {
-          return;
-        }
+      if (!mounted) {
+        return;
+      }
 
-        setState(() {
-          _liveBusMarkers = markers;
-        });
-      },
-    );
+      setState(() {
+        _liveBusMarkers = markers;
+      });
+    });
   }
 
   void _showBusInformation(
-      String busId,
-      Map<dynamic, dynamic> bus,
-      Map<String, dynamic>? route,
-      ) {
+    String busId,
+    Map<dynamic, dynamic> bus,
+    Map<String, dynamic>? route,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -322,25 +279,15 @@ class _MapSearchPageState extends State<MapSearchPage> {
           initialChildSize: 0.42,
           minChildSize: 0.28,
           maxChildSize: 0.75,
-          builder: (
-              context,
-              scrollController,
-              ) {
+          builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: ListView(
                 controller: scrollController,
-                padding: const EdgeInsets.fromLTRB(
-                  20,
-                  12,
-                  20,
-                  30,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 30),
                 children: [
                   Center(
                     child: Container(
@@ -362,22 +309,17 @@ class _MapSearchPageState extends State<MapSearchPage> {
                         height: 52,
                         padding: const EdgeInsets.all(7),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(
-                            alpha: 0.08,
-                          ),
+                          color: AppColors.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Image.asset(
-                          'assets/images/bus_marker.png',
-                        ),
+                        child: Image.asset('assets/images/bus_marker.png'),
                       ),
 
                       const SizedBox(width: 14),
 
                       Expanded(
                         child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               busId,
@@ -408,63 +350,40 @@ class _MapSearchPageState extends State<MapSearchPage> {
                         '${route?['destination'] ?? 'Unknown'}',
                   ),
 
-                  _infoRow(
-                    'Distance',
-                    '${route?['distance'] ?? 0} km',
-                  ),
+                  _infoRow('Distance', '${route?['distance'] ?? 0} km'),
 
-                  _infoRow(
-                    'Speed',
-                    '${bus['speed'] ?? 0} km/h',
-                  ),
+                  _infoRow('Speed', '${bus['speed'] ?? 0} km/h'),
 
-                  _infoRow(
-                    'Direction',
-                    '${bus['heading'] ?? 0}°',
-                  ),
+                  _infoRow('Direction', '${bus['heading'] ?? 0}°'),
 
                   const SizedBox(height: 18),
 
                   const Text(
                     'Stops',
-                    style: TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
                   ),
 
                   const SizedBox(height: 8),
 
                   if (route?['stops'] is List)
-                    ...(route!['stops'] as List).map(
-                          (stop) {
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(
-                            Icons.location_on_rounded,
-                            color: AppColors.primary,
-                          ),
-                          title: Text(
-                            stop['name']?.toString() ?? '',
-                          ),
-                          trailing: Text(
-                            stop['eta']?.toString() ?? '',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    ...(route!['stops'] as List).map((stop) {
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          Icons.location_on_rounded,
+                          color: AppColors.primary,
+                        ),
+                        title: Text(stop['name']?.toString() ?? ''),
+                        trailing: Text(
+                          stop['eta']?.toString() ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      );
+                    }),
 
                   const SizedBox(height: 12),
 
-                  _infoRow(
-                    'Last Update',
-                    _formatLastUpdate(
-                      bus['updatedAt'],
-                    ),
-                  ),
+                  _infoRow('Last Update', _formatLastUpdate(bus['updatedAt'])),
                 ],
               ),
             );
@@ -479,38 +398,25 @@ class _MapSearchPageState extends State<MapSearchPage> {
       return 'Unknown';
     }
 
-    return DateTime.fromMillisecondsSinceEpoch(
-      timestamp.toInt(),
-    ).toString();
+    return DateTime.fromMillisecondsSinceEpoch(timestamp.toInt()).toString();
   }
 
-  Widget _infoRow(
-      String title,
-      String value,
-      ) {
+  Widget _infoRow(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 8,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 15,
-            ),
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
           ),
           const SizedBox(width: 20),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -531,10 +437,8 @@ class _MapSearchPageState extends State<MapSearchPage> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName:
-                'com.ceygo.transportation',
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.ceygo.transportation',
               ),
 
               MarkerLayer(
@@ -550,9 +454,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(
-                                alpha: 0.15,
-                              ),
+                              color: Colors.black.withValues(alpha: 0.15),
                               blurRadius: 8,
                             ),
                           ],
@@ -585,18 +487,11 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                12,
-                20,
-                0,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
               child: Material(
                 color: Colors.transparent,
                 elevation: 8,
-                shadowColor: Colors.black.withValues(
-                  alpha: 0.15,
-                ),
+                shadowColor: Colors.black.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(18),
                 child: TextField(
                   controller: _searchController,
@@ -604,18 +499,14 @@ class _MapSearchPageState extends State<MapSearchPage> {
                   textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: 'Search destination',
-                    hintStyle: TextStyle(
-                      color: Colors.grey.shade500,
-                    ),
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
                     prefixIcon: const Icon(
                       Icons.search_rounded,
                       color: AppColors.primary,
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(18),
                       borderSide: BorderSide.none,
@@ -624,10 +515,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                       onPressed: () {
                         _searchController.clear();
                       },
-                      icon: const Icon(
-                        Icons.close_rounded,
-                        size: 20,
-                      ),
+                      icon: const Icon(Icons.close_rounded, size: 20),
                     ),
                   ),
                 ),
@@ -644,9 +532,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
               foregroundColor: AppColors.primary,
               elevation: 6,
               onPressed: _getCurrentLocation,
-              child: const Icon(
-                Icons.my_location_rounded,
-              ),
+              child: const Icon(Icons.my_location_rounded),
             ),
           ),
         ],

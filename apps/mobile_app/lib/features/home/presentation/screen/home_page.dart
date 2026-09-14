@@ -21,62 +21,75 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final headerHeight = MediaQuery.sizeOf(context).height * 0.35;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _currentIndex == 0
-          ? SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    Widget page;
+
+    switch (_currentIndex) {
+      case 0:
+        page = SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
                   children: [
-                    Stack(
-                      children: [
-                        Image.asset(
-                          'assets/images/home_page_img_background.png',
-                          width: double.infinity,
-                          height: headerHeight,
-                          fit: BoxFit.cover,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: buildHeader(UserProfileService.name),
-                        ),
-                      ],
+                    Image.asset(
+                      'assets/images/home_page_img_background.png',
+                      width: double.infinity,
+                      height: headerHeight,
+                      fit: BoxFit.cover,
                     ),
                     Padding(
                       padding: const EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          buildSearchBar(context),
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Nearby Transport',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: buildHeader(UserProfileService.name),
                     ),
                   ],
                 ),
-              ),
-            )
-          : _currentIndex == 2
-          ? const TicketScreen()
-          : _currentIndex == 3
-          ? const ProfileScreen()
-          : Center(
-              child: Text(
-                'Page $_currentIndex',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildSearchBar(context),
+                      const SizedBox(height: 28),
+                      const Text(
+                        'Nearby Transport',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                          color: Color(0xFF202124),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
+          ),
+        );
+        break;
+
+      case 2:
+        page = const TicketScreen();
+        break;
+
+      case 3:
+        page = const ProfileScreen();
+        break;
+
+      default:
+        page = Center(
+          child: Text(
+            'Page $_currentIndex',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: page,
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {

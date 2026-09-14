@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class DestinationButton extends StatelessWidget {
-  final String label;
+class DestinationField extends StatelessWidget {
+  final String hintText;
   final String value;
   final List<String> destinations;
   final ValueChanged<String> onSelected;
 
-  const DestinationButton({
+  const DestinationField({
     super.key,
-    required this.label,
+    required this.hintText,
     required this.value,
     required this.destinations,
     required this.onSelected,
@@ -22,7 +22,6 @@ class DestinationButton extends StatelessWidget {
         if (textEditingValue.text.isEmpty) {
           return destinations;
         }
-
         return destinations.where(
           (destination) => destination.toLowerCase().contains(
             textEditingValue.text.toLowerCase(),
@@ -39,50 +38,34 @@ class DestinationButton extends StatelessWidget {
           ) {
             return Container(
               height: 56,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                border: Border.all(color: Colors.white, width: 1.4),
                 borderRadius: BorderRadius.circular(28),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    height: 56,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D56FF),
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      label,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
+              alignment: Alignment.centerLeft,
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                cursorColor: Colors.white,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter destination',
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 4),
-                      ),
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                ],
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
             );
           },
@@ -108,7 +91,6 @@ class DestinationButton extends StatelessWidget {
                     itemCount: options.length,
                     itemBuilder: (context, index) {
                       final option = options.elementAt(index);
-
                       return ListTile(
                         leading: const Icon(Icons.location_on_outlined),
                         title: Text(option),

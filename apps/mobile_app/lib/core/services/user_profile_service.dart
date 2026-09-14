@@ -8,8 +8,7 @@ class UserProfileService {
   static const String _phoneKey = 'user_phone';
 
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static String _name = 'User';
   static String _role = 'Passenger';
@@ -31,10 +30,7 @@ class UserProfileService {
     if (user == null) return;
 
     try {
-      final document = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      final document = await _firestore.collection('users').doc(user.uid).get();
 
       if (!document.exists) return;
 

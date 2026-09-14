@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:transportation_tracking_system/core/theme/app_colors.dart';
 
 class ButtonSignout extends StatelessWidget {
   final VoidCallback onPressed;
@@ -16,14 +15,16 @@ class ButtonSignout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? MediaQuery.sizeOf(context).width * 0.9,
+      width: width ?? MediaQuery.sizeOf(context).width * 0.87,
       height: height,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor:  Color(0xFFE53E3E),
-          foregroundColor: Color(0xFFFFFFFF),
-          elevation: 0,
+          backgroundColor: const Color(0xFFE53E3E),
+          foregroundColor: Colors.white,
+          elevation: 2,
+          shadowColor: const Color(0xFFE53E3E).withValues(alpha: 0.18),
+          side: BorderSide.none,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(45),
           ),
@@ -31,12 +32,19 @@ class ButtonSignout extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Icon(Icons.logout, size: 20, color: Colors.white),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.logout, size: 19, color: Colors.white),
+            ),
             const SizedBox(width: 18),
-
-            Text(
+            const Text(
               "Sign Out",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 fontFamily: "Poppins",

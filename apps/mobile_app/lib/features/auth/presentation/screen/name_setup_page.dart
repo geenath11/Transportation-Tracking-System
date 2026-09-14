@@ -140,13 +140,11 @@ class _NameSetupPageState extends State<NameSetupPage> {
             children: [
               Align(
                 alignment: Alignment.topRight,
-                child:TextButton(
+                child: TextButton(
                   onPressed: () {
                     if (_isLoading) return;
 
-                    _saveUserProfile(
-                      continueToNextPage: false,
-                    );
+                    _saveUserProfile(continueToNextPage: false);
                   },
                   child: Text(
                     'Maybe Later',
@@ -244,9 +242,7 @@ class _NameSetupPageState extends State<NameSetupPage> {
                       onPressed: () {
                         if (_isLoading) return;
 
-                        _saveUserProfile(
-                          continueToNextPage: false,
-                        );
+                        _saveUserProfile(continueToNextPage: false);
                       },
                       child: _isLoading
                           ? const SizedBox(

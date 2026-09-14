@@ -35,9 +35,7 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (_) => const HomePage(),
-      ),
+      MaterialPageRoute(builder: (_) => const HomePage()),
     );
   }
 
@@ -51,9 +49,7 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
       decoration: BoxDecoration(
         color: AppColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.4),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
@@ -63,23 +59,14 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              icon,
-              color: AppColors.primary,
-              size: 28,
-            ),
+            child: Icon(icon, color: AppColors.primary, size: 28),
           ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: AppTextStyles.bold.copyWith(
-                    fontSize: 17,
-                  ),
-                ),
+                Text(title, style: AppTextStyles.bold.copyWith(fontSize: 17)),
                 const SizedBox(height: 5),
                 Text(
                   description,
@@ -116,14 +103,12 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
               Text(
                 "Let's improve your\ntravel experience",
                 textAlign: TextAlign.center,
-                style: AppTextStyles.bold.copyWith(
-                  fontSize: 25,
-                ),
+                style: AppTextStyles.bold.copyWith(fontSize: 25),
               ),
               const SizedBox(height: 15),
               Text(
                 'Allow access to provide better journeys,\n'
-                    'real-time updates and smarter travel.',
+                'real-time updates and smarter travel.',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.semiBold.copyWith(
                   color: Colors.grey,
@@ -135,14 +120,13 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
                 icon: Icons.location_on_outlined,
                 title: 'Location Access',
                 description:
-                'Find nearby buses and get accurate arrival times.',
+                    'Find nearby buses and get accurate arrival times.',
               ),
               const SizedBox(height: 18),
               _permissionCard(
                 icon: Icons.notifications_none,
                 title: 'Notification Access',
-                description:
-                'Receive trip updates, delays and booking alerts.',
+                description: 'Receive trip updates, delays and booking alerts.',
               ),
               const Spacer(),
               AppButton(
@@ -151,18 +135,14 @@ class _PermissionSetupPageState extends State<PermissionSetupPage> {
                 onPressed: requestPermissions,
                 child: Text(
                   'Allow Access',
-                  style: AppTextStyles.semiBold.copyWith(
-                    fontSize: 17,
-                  ),
+                  style: AppTextStyles.semiBold.copyWith(fontSize: 17),
                 ),
               ),
               TextButton(
                 onPressed: _goToHome,
                 child: Text(
                   'Maybe Later',
-                  style: AppTextStyles.bold.copyWith(
-                    color: AppColors.primary,
-                  ),
+                  style: AppTextStyles.bold.copyWith(color: AppColors.primary),
                 ),
               ),
             ],

@@ -61,9 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
               _isLoading = false;
             });
 
-            _showMessage(
-              e.message ?? 'Automatic verification failed',
-            );
+            _showMessage(e.message ?? 'Automatic verification failed');
           }
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -73,9 +71,7 @@ class _AuthScreenState extends State<AuthScreen> {
             _isLoading = false;
           });
 
-          _showMessage(
-            e.message ?? 'OTP verification failed',
-          );
+          _showMessage(e.message ?? 'OTP verification failed');
         },
         codeSent: (String verificationId, int? resendToken) {
           if (!mounted) return;
@@ -103,9 +99,7 @@ class _AuthScreenState extends State<AuthScreen> {
         _isLoading = false;
       });
 
-      _showMessage(
-        e.message ?? 'Something went wrong',
-      );
+      _showMessage(e.message ?? 'Something went wrong');
     } catch (_) {
       if (!mounted) return;
 
@@ -122,11 +116,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-        ),
-      );
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -137,8 +127,7 @@ class _AuthScreenState extends State<AuthScreen> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final keyboardOpen =
-                MediaQuery.of(context).viewInsets.bottom > 0;
+            final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
             return Stack(
               children: [
@@ -148,9 +137,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       minHeight: constraints.maxHeight,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -198,19 +185,15 @@ class _AuthScreenState extends State<AuthScreen> {
                                     decoration: InputDecoration(
                                       hintText: 'Enter your Number',
                                       counterText: '',
-                                      prefixIcon: const Icon(
-                                        Icons.phone,
-                                      ),
+                                      prefixIcon: const Icon(Icons.phone),
                                       filled: true,
                                       fillColor: Colors.grey.shade100,
                                       border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(17),
+                                        borderRadius: BorderRadius.circular(17),
                                         borderSide: BorderSide.none,
                                       ),
                                       focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(17),
+                                        borderRadius: BorderRadius.circular(17),
                                         borderSide: BorderSide(
                                           color: AppColors.primary,
                                           width: 2,
@@ -226,20 +209,18 @@ class _AuthScreenState extends State<AuthScreen> {
                                   onPressed: _sendOTP,
                                   child: _isLoading
                                       ? const SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: Colors.white,
-                                    ),
-                                  )
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            color: Colors.white,
+                                          ),
+                                        )
                                       : Text(
-                                    'Continue',
-                                    style:
-                                    AppTextStyles.semiBold.copyWith(
-                                      fontSize: 17,
-                                    ),
-                                  ),
+                                          'Continue',
+                                          style: AppTextStyles.semiBold
+                                              .copyWith(fontSize: 17),
+                                        ),
                                 ),
                                 const SizedBox(height: 30),
                                 Row(
@@ -253,8 +234,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                     Expanded(
                                       child: Text(
                                         "We'll send you an OTP to verify your number",
-                                        style:
-                                        AppTextStyles.semiBold.copyWith(
+                                        style: AppTextStyles.semiBold.copyWith(
                                           color: Colors.grey,
                                           fontSize: 13,
                                         ),

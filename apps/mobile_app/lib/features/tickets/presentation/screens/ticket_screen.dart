@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:transportation_tracking_system/features/tickets/presentation/widgets/destination_button.dart';
+import 'package:transportation_tracking_system/features/tickets/presentation/widgets/route_selector_card.dart';
 import 'package:transportation_tracking_system/core/theme/app_text_styles.dart';
+
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
 
@@ -23,6 +24,14 @@ class _TicketScreenState extends State<TicketScreen> {
     'Diyatalawa',
   ];
 
+  void _swapLocations() {
+    setState(() {
+      final temp = fromLocation;
+      fromLocation = toLocation;
+      toLocation = temp;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,26 +52,17 @@ class _TicketScreenState extends State<TicketScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              DestinationButton(
-                label: '   From   ',
-                value: fromLocation,
+              RouteSelectorCard(
+                fromValue: fromLocation,
+                toValue: toLocation,
                 destinations: destinations,
-                onSelected: (destination) {
-                  setState(() {
-                    fromLocation = destination;
-                  });
+                onFromSelected: (destination) {
+                  setState(() => fromLocation = destination);
                 },
-              ),
-              const SizedBox(height: 16),
-              DestinationButton(
-                label: 'Where to',
-                value: toLocation,
-                destinations: destinations,
-                onSelected: (destination) {
-                  setState(() {
-                    toLocation = destination;
-                  });
+                onToSelected: (destination) {
+                  setState(() => toLocation = destination);
                 },
+                onSwap: _swapLocations,
               ),
             ],
           ),

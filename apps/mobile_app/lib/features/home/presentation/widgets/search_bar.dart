@@ -11,9 +11,7 @@ Widget buildSearchBar(BuildContext context) {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const MapSearchPage(),
-          ),
+          MaterialPageRoute(builder: (context) => const MapSearchPage()),
         );
       },
       child: Container(
@@ -22,17 +20,11 @@ Widget buildSearchBar(BuildContext context) {
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: Colors.grey.shade200,
-          ),
+          border: Border.all(color: Colors.grey.shade200),
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.search_rounded,
-              size: 25,
-              color: AppColors.primary,
-            ),
+            Icon(Icons.search_rounded, size: 25, color: AppColors.primary),
 
             const SizedBox(width: 12),
 

@@ -12,9 +12,7 @@ Widget buildHeader(String userName) {
           children: [
             Text(
               "Hello, $userName",
-              style: AppTextStyles.semiBold.copyWith(
-                fontSize: 18,
-              ),
+              style: AppTextStyles.semiBold.copyWith(fontSize: 18),
             ),
             const SizedBox(height: 2),
             Text(
@@ -36,10 +34,7 @@ Widget buildHeader(String userName) {
         ),
         child: IconButton(
           onPressed: () {},
-          icon: const Icon(
-            Icons.notifications_none_rounded,
-            size: 26,
-          ),
+          icon: const Icon(Icons.notifications_none_rounded, size: 26),
           color: AppColors.primary,
           padding: EdgeInsets.zero,
         ),
