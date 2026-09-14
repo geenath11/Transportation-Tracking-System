@@ -71,11 +71,11 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {},
           ),
 
-          const SizedBox(height: 24),
+          Spacer(),
 
           ButtonSignout(onPressed: () {}),
 
-          const SizedBox(height: 16),
+          Spacer(),
         ],
       ),
     );

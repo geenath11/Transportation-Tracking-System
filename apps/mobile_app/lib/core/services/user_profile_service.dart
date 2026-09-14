@@ -55,7 +55,7 @@ class UserProfileService {
         await prefs.setString(_phoneKey, _phone);
       }
     } catch (_) {
-      // Cached data remains available if Firestore is unavailable.
+
     }
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:transportation_tracking_system/core/theme/app_text_styles.dart';
 
 class ButtonSignout extends StatelessWidget {
+  static const _backgroundColor = Color(0xFFE53E3E);
+  static const _iconBackgroundColor = Color(0x29FFFFFF);
   final VoidCallback onPressed;
   final double? width;
   final double height;
@@ -20,34 +23,33 @@ class ButtonSignout extends StatelessWidget {
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFFE53E3E),
+          backgroundColor: _backgroundColor,
           foregroundColor: Colors.white,
           elevation: 2,
-          shadowColor: const Color(0xFFE53E3E).withValues(alpha: 0.18),
+          shadowColor: _backgroundColor.withValues(alpha: 0.18),
           side: BorderSide.none,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(45),
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.16),
+            DecoratedBox(
+              decoration: const BoxDecoration(
+                color: _iconBackgroundColor,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.logout, size: 19, color: Colors.white),
+              child: const SizedBox.square(
+                dimension: 34,
+                child: Icon(Icons.logout, size: 19, color: Colors.white),
+              ),
             ),
             const SizedBox(width: 18),
-            const Text(
-              "Sign Out",
-              style: TextStyle(
+            Text(
+              'Sign Out',
+              style: AppTextStyles.semiBold.copyWith(
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Poppins",
                 color: Colors.white,
               ),
             ),

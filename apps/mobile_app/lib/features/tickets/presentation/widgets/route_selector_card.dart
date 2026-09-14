@@ -26,11 +26,19 @@ class RouteSelectorCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: double.infinity,
+          width: MediaQuery.sizeOf(context).width * 1,
+          height: MediaQuery.sizeOf(context).height*.21888,
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
           decoration: BoxDecoration(
             color: const Color(0xFF0D56FF),
             borderRadius: BorderRadius.circular(32),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             children: [

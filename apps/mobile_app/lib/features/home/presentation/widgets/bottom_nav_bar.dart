@@ -41,7 +41,7 @@ class CustomBottomNavBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Container(
-        height: 68,
+        height:MediaQuery.sizeOf(context).height * 0.079,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.96),
