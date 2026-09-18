@@ -103,7 +103,6 @@ class RouteInfoCard extends StatelessWidget {
                 for (int i = 0; i < trips.length; i++) ...[
                   _TripCard(
                     trip: trips[i],
-                    highlighted: i == 0,
                     scale: scale,
                   ),
                   if (i != trips.length - 1)
@@ -138,21 +137,15 @@ class TripInfo {
 
 class _TripCard extends StatelessWidget {
   final TripInfo trip;
-  final bool highlighted;
   final double scale;
 
   const _TripCard({
     required this.trip,
-    required this.highlighted,
     required this.scale,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (!highlighted) {
-
-    }
-
     return SizedBox(
       width: 300 * scale,
       height: 105 * scale,

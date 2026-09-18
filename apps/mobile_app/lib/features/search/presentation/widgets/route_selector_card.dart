@@ -26,8 +26,8 @@ class RouteSelectorCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: MediaQuery.sizeOf(context).width * 1,
-          height: MediaQuery.sizeOf(context).height*.21888,
+          width: double.infinity,
+          height: 188,
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
           decoration: BoxDecoration(
             color: const Color(0xFF0D56FF),
@@ -69,13 +69,13 @@ class RouteSelectorCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.12),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
               ),
               child: SwapButton(onTap: onSwap),
             ),

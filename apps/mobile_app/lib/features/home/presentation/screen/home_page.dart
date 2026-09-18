@@ -41,7 +41,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(24),
-                      child: buildHeader(UserProfileService.name),
+                      child: ListenableBuilder(
+                        listenable: UserProfileService.instance,
+                        builder: (context, _) =>
+                            buildHeader(UserProfileService.instance.name),
+                      ),
                     ),
                   ],
                 ),
@@ -75,6 +79,7 @@ class _HomePageState extends State<HomePage> {
         break;
       case 2:
         page = const TicketScreen();
+        break;
       case 3:
         page = const ProfileScreen();
         break;

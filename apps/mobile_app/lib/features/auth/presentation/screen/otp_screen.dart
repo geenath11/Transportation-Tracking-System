@@ -23,11 +23,14 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  static const int _otpDurationSeconds = 30;
+
   final TextEditingController _otpController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   Timer? _otpTimer;
+  late String _verificationId;
   bool _isLoading = false;
-  int _remainingSeconds = 59;
+  int _remainingSeconds = _otpDurationSeconds;
   static final PinTheme _defaultPinTheme = PinTheme(
     width: 55,
     height: 60,
@@ -65,18 +68,19 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void initState() {
     super.initState();
+    _verificationId = widget.verificationId;
     _startOtpTimer();
   }
 
   void _startOtpTimer() {
     _otpTimer?.cancel();
-    _remainingSeconds = 40;
+    _remainingSeconds = _otpDurationSeconds;
     _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds <= 0) {
+      if (!mounted) {
         timer.cancel();
         return;
       }
-      if (!mounted) {
+      if (_remainingSeconds <= 0) {
         timer.cancel();
         return;
       }
@@ -112,7 +116,7 @@ class _OtpScreenState extends State<OtpScreen> {
     });
     try {
       final credential = PhoneAuthProvider.credential(
-        verificationId: widget.verificationId,
+        verificationId: _verificationId,
         smsCode: otp,
       );
       await _auth.signInWithCredential(credential);
@@ -127,6 +131,48 @@ class _OtpScreenState extends State<OtpScreen> {
         _isLoading = false;
       });
       _showMessage(e.message ?? 'Invalid OTP. Please try again.');
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      _showMessage('Something went wrong. Please try again.');
+    }
+  }
+
+  Future<void> _resendOtp() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: widget.phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const NameSetupPage()),
+          );
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (!mounted) return;
+          setState(() {
+            _isLoading = false;
+          });
+          _showMessage(e.message ?? 'Failed to resend OTP');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (!mounted) return;
+          setState(() {
+            _verificationId = verificationId;
+            _isLoading = false;
+          });
+          _startOtpTimer();
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -227,26 +273,45 @@ class _OtpScreenState extends State<OtpScreen> {
                                     ),
                             ),
                             const SizedBox(height: 30),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Resend OTP in ',
-                                  style: AppTextStyles.semiBold.copyWith(
-                                    color: Colors.grey.shade600,
-                                    fontSize: 14,
+                            if (_remainingSeconds <= 0)
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(8),
+                                  onTap: _isLoading ? null : _resendOtp,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: Text(
+                                      'Resend OTP',
+                                      style: AppTextStyles.bold.copyWith(
+                                        color: AppColors.primary,
+                                        fontSize: 16,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                Text(
-                                  _formattedTime,
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
+                              )
+                            else
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Resend OTP in ',
+                                    style: AppTextStyles.semiBold.copyWith(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  Text(
+                                    _formattedTime,
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             const SizedBox(height: 25),
                             Container(
                               padding: const EdgeInsets.symmetric(

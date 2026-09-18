@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:transportation_tracking_system/core/services/user_profile_service.dart';
 import 'package:transportation_tracking_system/features/auth/presentation/screen/permission_setup_page.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -43,7 +44,7 @@ class _NameSetupPageState extends State<NameSetupPage> {
     });
   }
 
-  Future<void> _saveUserProfile({required bool continueToNextPage}) async {
+  Future<void> _saveUserProfile({required bool requireName}) async {
     if (_isLoading) return;
     final user = _auth.currentUser;
     if (user == null) {
@@ -52,11 +53,11 @@ class _NameSetupPageState extends State<NameSetupPage> {
     }
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
-    if (continueToNextPage && firstName.isEmpty) {
+    if (requireName && firstName.isEmpty) {
       _showMessage('Please enter your first name');
       return;
     }
-    if (continueToNextPage && lastName.isEmpty) {
+    if (requireName && lastName.isEmpty) {
       _showMessage('Please enter your last name');
       return;
     }
@@ -64,18 +65,24 @@ class _NameSetupPageState extends State<NameSetupPage> {
       _isLoading = true;
     });
     try {
+      final fullName = [
+        firstName,
+        lastName,
+      ].where((name) => name.isNotEmpty).join(' ');
       await _firestore.collection('users').doc(user.uid).set({
         'uid': user.uid,
         'firstName': firstName,
         'lastName': lastName,
-        'fullName': [
-          firstName,
-          lastName,
-        ].where((name) => name.isNotEmpty).join(' '),
+        'fullName': fullName,
         'phoneNumber': user.phoneNumber,
         'role': 'passenger',
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
+      await UserProfileService.instance.save(
+        name: fullName,
+        role: 'passenger',
+        phone: user.phoneNumber ?? '',
+      );
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
@@ -144,7 +151,7 @@ class _NameSetupPageState extends State<NameSetupPage> {
                   onPressed: () {
                     if (_isLoading) return;
 
-                    _saveUserProfile(continueToNextPage: false);
+                    _saveUserProfile(requireName: false);
                   },
                   child: Text(
                     'Maybe Later',
@@ -242,7 +249,7 @@ class _NameSetupPageState extends State<NameSetupPage> {
                       onPressed: () {
                         if (_isLoading) return;
 
-                        _saveUserProfile(continueToNextPage: false);
+                        _saveUserProfile(requireName: true);
                       },
                       child: _isLoading
                           ? const SizedBox(

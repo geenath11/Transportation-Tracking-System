@@ -60,7 +60,7 @@ class _DateSelectorState extends State<DateSelector> {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: _dates.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final isSelected = index == _selectedIndex;
               return DateChip(

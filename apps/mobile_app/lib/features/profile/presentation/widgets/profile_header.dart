@@ -63,7 +63,7 @@ class ProfileHeader extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  UserProfileService.name,
+                  UserProfileService.instance.name,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.semiBold.copyWith(
                     fontSize: 21,
@@ -77,14 +77,14 @@ class ProfileHeader extends StatelessWidget {
                   runSpacing: 2,
                   children: [
                     Text(
-                      UserProfileService.role,
+                      UserProfileService.instance.role,
                       style: AppTextStyles.semiBold.copyWith(
                         fontSize: 14,
                         color: const Color(0xFF4B4D55),
                       ),
                     ),
                     Text(
-                      UserProfileService.phone,
+                      UserProfileService.instance.phone,
                       style: AppTextStyles.semiBold.copyWith(
                         fontSize: 14,
                         color: const Color(0xFF4B4D55),

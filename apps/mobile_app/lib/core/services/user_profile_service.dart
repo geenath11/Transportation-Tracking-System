@@ -1,8 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserProfileService {
+class UserProfileService extends ChangeNotifier {
+  UserProfileService._();
+
+  static final UserProfileService instance = UserProfileService._();
+
   static const String _nameKey = 'user_name';
   static const String _roleKey = 'user_role';
   static const String _phoneKey = 'user_phone';
@@ -10,15 +15,15 @@ class UserProfileService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static String _name = 'User';
-  static String _role = 'Passenger';
-  static String _phone = '';
+  String _name = 'User';
+  String _role = 'Passenger';
+  String _phone = '';
 
-  static String get name => _name;
-  static String get role => _role;
-  static String get phone => _phone;
+  String get name => _name;
+  String get role => _role;
+  String get phone => _phone;
 
-  static Future<void> load() async {
+  Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
 
     _name = prefs.getString(_nameKey) ?? 'User';
@@ -54,12 +59,14 @@ class UserProfileService {
         _phone = phone.trim();
         await prefs.setString(_phoneKey, _phone);
       }
+
+      notifyListeners();
     } catch (_) {
 
     }
   }
 
-  static Future<void> save({
+  Future<void> save({
     required String name,
     required String role,
     required String phone,
@@ -67,6 +74,8 @@ class UserProfileService {
     _name = name;
     _role = role;
     _phone = phone;
+
+    notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
 
@@ -77,10 +86,12 @@ class UserProfileService {
     ]);
   }
 
-  static Future<void> clear() async {
+  Future<void> clear() async {
     _name = 'User';
     _role = 'Passenger';
     _phone = '';
+
+    notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
 

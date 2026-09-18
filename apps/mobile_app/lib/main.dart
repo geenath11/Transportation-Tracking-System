@@ -10,7 +10,7 @@ Future<void> main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await UserProfileService.load();
+  await UserProfileService.instance.load();
 
   runApp(const CeyGoApp());
 }

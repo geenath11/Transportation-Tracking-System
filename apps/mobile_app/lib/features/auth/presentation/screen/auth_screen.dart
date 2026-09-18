@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/custom_button.dart';
+import 'name_setup_page.dart';
 import 'otp_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -51,9 +52,10 @@ class _AuthScreenState extends State<AuthScreen> {
 
             if (!mounted) return;
 
-            setState(() {
-              _isLoading = false;
-            });
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const NameSetupPage()),
+            );
           } on FirebaseAuthException catch (e) {
             if (!mounted) return;
 

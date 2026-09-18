@@ -58,7 +58,7 @@ class DestinationField extends StatelessWidget {
                   hintText: hintText,
                   hintStyle: TextStyle(
                     fontFamily: 'Poppins',
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withValues(alpha: 0.85),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),

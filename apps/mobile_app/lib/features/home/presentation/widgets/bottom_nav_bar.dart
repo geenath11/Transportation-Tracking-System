@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:transportation_tracking_system/core/theme/app_colors.dart';
-import 'package:transportation_tracking_system/core/theme/app_text_styles.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -41,7 +40,7 @@ class CustomBottomNavBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
       child: Container(
-        height:MediaQuery.sizeOf(context).height * 0.079,
+        height: 76,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.96),

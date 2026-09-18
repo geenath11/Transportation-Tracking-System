@@ -16,10 +16,8 @@ class PermissionSetupPage extends StatefulWidget {
 
 class _PermissionSetupPageState extends State<PermissionSetupPage> {
   Future<void> requestPermissions() async {
-    await Future.wait([
-      Permission.location.request(),
-      Permission.notification.request(),
-    ]);
+    await Permission.location.request();
+    await Permission.notification.request();
 
     if (!mounted) return;
 
