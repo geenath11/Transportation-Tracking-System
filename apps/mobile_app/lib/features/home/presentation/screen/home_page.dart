@@ -5,6 +5,7 @@ import '../widgets/home_header.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
+import '../../../search/presentation/screens/search_screen.dart';
 import '../../../tickets/presentation/screens/ticket_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -69,11 +70,11 @@ class _HomePageState extends State<HomePage> {
           ),
         );
         break;
-
+      case 1:
+        page = const SearchScreen();
+        break;
       case 2:
         page = const TicketScreen();
-        break;
-
       case 3:
         page = const ProfileScreen();
         break;
