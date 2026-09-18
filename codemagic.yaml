@@ -8,12 +8,6 @@ workflows:
       flutter: stable
       groups:
         - firebase
-      cache:
-        cache_paths:
-          - $FLUTTER_ROOT/.pub-cache
-          - $HOME/Library/Caches/CocoaPods
-          - apps/mobile_app/.dart_tool
-          - apps/mobile_app/ios/Pods
 
     scripts:
       - name: Configure Firebase
@@ -29,12 +23,12 @@ workflows:
       - name: Build iOS Debug
         script: |
           cd apps/mobile_app
-          flutter build ios --debug --no-codesign
+          flutter build ios --debug --simulator
 
-      - name: Create Runner ZIP
+      - name: Create Runner.app ZIP
         script: |
-          cd apps/mobile_app/build/ios/iphoneos
-          zip -r Runner.zip Runner
+          cd apps/mobile_app/build/ios/iphonesimulator
+          zip -r Runner.app.zip Runner.app
 
     artifacts:
-      - apps/mobile_app/build/ios/iphoneos/Runner.zip
+      - apps/mobile_app/build/ios/iphonesimulator/Runner.app.zip
