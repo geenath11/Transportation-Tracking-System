@@ -13,6 +13,7 @@ workflows:
       - name: Configure Firebase
         script: |
           cd apps/mobile_app
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
           printf '%s' "$FIREBASE_IOS_CONFIG" > ios/Runner/GoogleService-Info.plist
 
       - name: Get Flutter packages
