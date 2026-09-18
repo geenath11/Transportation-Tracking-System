@@ -8,6 +8,12 @@ workflows:
       flutter: stable
       groups:
         - firebase
+      cache:
+        cache_paths:
+          - $FLUTTER_ROOT/.pub-cache
+          - $HOME/Library/Caches/CocoaPods
+          - apps/mobile_app/.dart_tool
+          - apps/mobile_app/ios/Pods
 
     scripts:
       - name: Configure Firebase
