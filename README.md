@@ -4,16 +4,14 @@
   Smart Public Transportation Information System
 </h3>
 <p align="center">
-  A Flutter-based mobile application for passengers, drivers, and conductors.
+  A Flutter-based mobile application for passengers.
 </p>
-
 
 <div align="center">
 
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Backend-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
-![Riverpod](https://img.shields.io/badge/Riverpod-State%20Management-1389FD?style=for-the-badge)
 
 </div>
 
@@ -21,42 +19,38 @@
 
 ## About
 
-CeyGo is a smart public transportation information system designed to improve the public transportation experience by providing passengers with transportation information, booking services, live vehicle tracking, notifications, and other transportation-related features.
+CeyGo is a smart public transportation information system designed to improve the public transportation experience by providing passengers with transportation information, ticket booking, live vehicle tracking, and other transportation-related features.
 
-The mobile application is developed using **Flutter** and connects to **Firebase** services for authentication, database operations, notifications, and real-time transportation data.
+The mobile application is developed using **Flutter** and connects to **Firebase** services for authentication, database operations, and real-time transportation data.
 
 ---
 
 ## Features
 
-### Passenger
+### Implemented
 
 * Phone number authentication
 * OTP verification
 * Passenger profile setup
-* Public transportation information
-* Bus and train schedules
-* Destination search
-* Ticket booking
+* User profile management
+* From / to destination selection
+* Route selection
+* Date selection for journey planning
+* Live vehicle tracking map
+* Ticket booking flow (route search, ticket selection, confirmation, payment)
+* Local application state and profile caching
+
+### Planned
+
 * QR-based ticket functionality
 * Wallet functionality
-* Live transportation information
-* Notifications
+* Bus and train schedules
+* Push notifications
 * Complaints and feedback
 * Emergency features
-* User profile management
-* Date selection for journey planning
-* Destination selection
-* Route selection
-* Route and trip information display
-
-### Driver / Conductor
-
-* Role-based authentication
-* Transportation-related information
+* Driver / Conductor role-based dashboards
 * Live location sharing
 * Vehicle-related functionality
-* Driver/conductor specific workflows
 
 ---
 
@@ -67,13 +61,13 @@ The mobile application is developed using **Flutter** and connects to **Firebase
 | Flutter                    | Mobile application framework        |
 | Dart                       | Programming language                |
 | Firebase Authentication    | User authentication                 |
-| Cloud Firestore            | User and application data           |
-| Firebase Realtime Database | Real-time transportation data       |
-| Firebase Cloud Messaging   | Push notifications                  |
-| Riverpod                   | State management                    |
+| Cloud Firestore            | User, route, and application data   |
+| Firebase Realtime Database | Real-time vehicle locations         |
+| ChangeNotifier             | State management (Flutter built-in) |
 | Flutter Map                | Map and location features           |
 | OpenStreetMap              | Map data                            |
 | Nominatim                  | Location search and geocoding       |
+| Geocoding                  | Address lookup and coordinates      |
 | SharedPreferences          | Local application state and caching |
 
 ---
@@ -81,34 +75,38 @@ The mobile application is developed using **Flutter** and connects to **Firebase
 ## Project Structure
 
 ```text
-mobile_app/
-├── android/
-├── assets/
-│   ├── images/
-│   └── ...
-├── ios/
-├── lib/
-│   ├── app/
-│   │   └── app.dart
-│   │
-│   ├── core/
-│   │   ├── services/
-│   │   ├── theme/
-│   │   └── widgets/
-│   │
-│   ├── features/
-│   │   ├── auth/
-│   │   ├── home/
-│   │   ├── profile/
-│   │   ├── tickets/
-│   │   └── ...
-│   │
-│   ├── firebase_options.dart
-│   └── main.dart
-│
-├── test/
-├── pubspec.yaml
-└── README.md
+apps/
+├── mobile_app/
+│   ├── android/
+│   ├── assets/
+│   │   └── images/
+│   ├── ios/
+│   ├── linux/
+│   ├── macos/
+│   ├── windows/
+│   ├── lib/
+│   │   ├── app/
+│   │   │   └── app.dart
+│   │   ├── core/
+│   │   │   ├── services/
+│   │   │   ├── theme/
+│   │   │   └── widgets/
+│   │   ├── features/
+│   │   │   ├── auth/
+│   │   │   ├── onboarding/
+│   │   │   ├── home/
+│   │   │   ├── search/
+│   │   │   ├── passenger/
+│   │   │   ├── booking/
+│   │   │   ├── payment/
+│   │   │   ├── profile/
+│   │   │   └── tickets/
+│   │   ├── firebase_options.dart  (generated)
+│   │   └── main.dart
+│   ├── test/
+│   ├── pubspec.yaml
+│   └── README.md
+└── admin_web/
 ```
 
 ---
@@ -130,10 +128,14 @@ lib/
 │
 └── features/
     ├── auth/
+    ├── onboarding/
     ├── home/
+    ├── search/
+    ├── passenger/
+    ├── booking/
+    ├── payment/
     ├── profile/
-    ├── tickets/
-    └── ...
+    └── tickets/
 ```
 
 ### Core
@@ -150,8 +152,6 @@ Examples:
 ### Features
 
 Each major application function is organized into its own feature.
-
-For example:
 
 ```text
 features/
@@ -260,7 +260,7 @@ Used for:
 Used for:
 
 * User profiles
-* Application data
+* Route and ticket data
 * Structured persistent data
 
 ### Firebase Realtime Database
@@ -270,13 +270,7 @@ Used for:
 * Live vehicle locations
 * Real-time transportation information
 
-### Firebase Cloud Messaging
-
-Used for:
-
-* Push notifications
-* Transportation updates
-* Application notifications
+> Push notifications (Firebase Cloud Messaging) are planned.
 
 ---
 
@@ -318,7 +312,18 @@ cd apps/mobile_app
 flutter pub get
 ```
 
-### 4. Connect a Device
+### 4. Configure Firebase
+
+Firebase configuration files are not committed. Generate them with FlutterFire:
+
+```bash
+dart pub global activate flutterfire_cli
+flutterfire configure
+```
+
+In CI (Codemagic) these files are generated automatically from environment variables during the post-clone step.
+
+### 5. Connect a Device
 
 Check connected devices:
 
@@ -326,7 +331,7 @@ Check connected devices:
 flutter devices
 ```
 
-### 5. Run the Application
+### 6. Run the Application
 
 ```bash
 flutter run
@@ -364,17 +369,17 @@ dart format .
 
 ## Environment and Firebase Configuration
 
-Firebase configuration is generated through FlutterFire.
-
-The project uses:
+Firebase configuration is generated and must not be committed. The generated files are:
 
 ```text
-firebase_options.dart
+lib/firebase_options.dart
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
 ```
 
-Firebase configuration should be kept consistent with the project's Firebase environment.
+Locally, they are produced with `flutterfire configure`. In CI (Codemagic), the post-clone step writes them from environment variables matching your Firebase project.
 
-Do not replace Firebase configuration files with credentials from another Firebase project.
+Firebase configuration should always be kept consistent with the project's Firebase environment. Do not replace Firebase configuration files with credentials from another Firebase project.
 
 ---
 
@@ -407,6 +412,7 @@ The application uses:
 * `flutter_map`
 * OpenStreetMap
 * Nominatim
+* `geocoding`
 * `geolocator`
 * `permission_handler`
 
@@ -460,9 +466,8 @@ Example:
 
 ```text
 feature/mobile-app
-feature/authentication
 feature/ticket-booking
-feature/live-location
+feature/live-tracking
 ```
 
 ### Commit Messages
@@ -497,11 +502,11 @@ Then verify the application builds successfully.
 | ---------------- | ---------------------------------------------- |
 | Project          | CeyGo                                          |
 | System           | Smart Public Transportation Information System |
-| Platform         | Android / iOS                                  |
+| Platform         | Android (iOS planned)                          |
 | Framework        | Flutter                                        |
 | Language         | Dart                                           |
 | Backend          | Firebase                                       |
-| State Management | Riverpod                                       |
+| State Management | ChangeNotifier (Flutter built-in)              |
 | Project Type     | University Group Project                       |
 
 ---
@@ -515,18 +520,12 @@ The CeyGo mobile application is currently under active development as part of th
 Current development includes:
 
 * Passenger home and navigation interfaces
-* Destination and route selection
-* Date selection for journey planning
-* Route and trip information display
+* Destination, route, and date selection
+* Ticket booking flow (search, ticket selection, confirmation, payment)
+* Live vehicle tracking map
 * User profile management
 * Firebase integration
 * Authentication and application state management
+* Performance optimization (app startup, live data, caching)
 
 Additional transportation, booking, live tracking, notification, and other system features are being developed incrementally.
-
-
-
-
----
-
-
