@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.transportation_tracking_system"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

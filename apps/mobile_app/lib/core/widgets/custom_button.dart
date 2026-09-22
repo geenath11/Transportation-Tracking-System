@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
   final Widget child;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   final double? width;
   final double height;
+  final double borderRadius;
+  final Color backgroundColor;
 
   const AppButton({
     super.key,
@@ -13,6 +15,8 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.width,
     this.height = 56,
+    this.borderRadius = 15,
+    this.backgroundColor = const Color(0xFF0D5BD7),
   });
 
   @override
@@ -23,11 +27,11 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0D5BD7),
+          backgroundColor: backgroundColor,
           foregroundColor: Colors.white,
           elevation: 5,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
         child: child,

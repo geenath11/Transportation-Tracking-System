@@ -12,16 +12,24 @@ class ProfileScreen extends StatelessWidget {
   void _showComingSoon(BuildContext context, String feature) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('$feature is coming soon')));
+      ..showSnackBar(
+        SnackBar(
+          content: Text('$feature is coming soon'),
+        ),
+      );
   }
 
   Future<void> _signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     await UserProfileService.instance.clear();
+
     if (!context.mounted) return;
+
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      (route) => false,
+      MaterialPageRoute(
+        builder: (_) => const OnboardingScreen(),
+      ),
+          (route) => false,
     );
   }
 
@@ -41,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Account",
-                icon: Icons.account_circle_rounded,
+                icon: Icons.account_circle_outlined,
                 onPressed: () => _showComingSoon(context, 'Account'),
               ),
 
@@ -49,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Payment Information",
-                icon: Icons.payment_rounded,
+                icon: Icons.payment_outlined,
                 onPressed: () =>
                     _showComingSoon(context, 'Payment Information'),
               ),
@@ -58,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Wallet Balance",
-                icon: Icons.account_balance_wallet_rounded,
+                icon: Icons.account_balance_wallet_outlined,
                 onPressed: () => _showComingSoon(context, 'Wallet Balance'),
               ),
 
@@ -66,7 +74,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Booking Profile",
-                icon: Icons.history_rounded,
+                icon: Icons.history_outlined,
                 onPressed: () => _showComingSoon(context, 'Booking Profile'),
               ),
 
@@ -74,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Notification",
-                icon: Icons.notifications_rounded,
+                icon: Icons.notifications_none_rounded,
                 onPressed: () => _showComingSoon(context, 'Notification'),
               ),
 
@@ -82,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
 
               ButtonProfile(
                 text: "Privacy Policy",
-                icon: Icons.privacy_tip_rounded,
+                icon: Icons.privacy_tip_outlined,
                 onPressed: () => _showComingSoon(context, 'Privacy Policy'),
               ),
 
@@ -96,7 +104,9 @@ class ProfileScreen extends StatelessWidget {
 
               const Spacer(),
 
-              ButtonSignout(onPressed: () => _signOut(context)),
+              ButtonSignout(
+                onPressed: () => _signOut(context),
+              ),
 
               const Spacer(),
             ],

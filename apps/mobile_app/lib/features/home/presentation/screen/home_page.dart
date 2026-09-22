@@ -20,82 +20,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final headerHeight = MediaQuery.sizeOf(context).height * 0.35;
-
-    Widget page;
-
-    switch (_currentIndex) {
-      case 0:
-        page = SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    Image.asset(
-                      'assets/images/home_page_img_background.png',
-                      width: double.infinity,
-                      height: headerHeight,
-                      fit: BoxFit.cover,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: ListenableBuilder(
-                        listenable: UserProfileService.instance,
-                        builder: (context, _) =>
-                            buildHeader(UserProfileService.instance.name),
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 26, 24, 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      buildSearchBar(context),
-                      const SizedBox(height: 28),
-                      const Text(
-                        'Nearby Transport',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                          color: Color(0xFF202124),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-        break;
-      case 1:
-        page = const SearchScreen();
-        break;
-      case 2:
-        page = const TicketScreen();
-        break;
-      case 3:
-        page = const ProfileScreen();
-        break;
-
-      default:
-        page = Center(
-          child: Text(
-            'Page $_currentIndex',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        );
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: page,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          _buildHomeTab(context),
+          const SearchScreen(),
+          const TicketScreen(),
+          const ProfileScreen(),
+        ],
+      ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -103,6 +38,60 @@ class _HomePageState extends State<HomePage> {
             _currentIndex = index;
           });
         },
+      ),
+    );
+  }
+
+  Widget _buildHomeTab(BuildContext context) {
+    final headerHeight = MediaQuery.sizeOf(context).height * 0.35;
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                Image.asset(
+                  'assets/images/home_page_img_background.jpg',
+                  width: double.infinity,
+                  height: headerHeight,
+                  fit: BoxFit.cover,
+                  cacheWidth: MediaQuery.devicePixelRatioOf(context).ceil() *
+                      MediaQuery.sizeOf(context).width.toInt(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: ListenableBuilder(
+                    listenable: UserProfileService.instance,
+                    builder: (context, _) =>
+                        buildHeader(UserProfileService.instance.name),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 26, 24, 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  buildSearchBar(context),
+                  const SizedBox(height: 28),
+                  const Text(
+                    'Nearby Transport',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      color: Color(0xFF202124),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

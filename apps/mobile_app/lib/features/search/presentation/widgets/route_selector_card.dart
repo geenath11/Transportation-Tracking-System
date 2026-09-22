@@ -26,9 +26,9 @@ class RouteSelectorCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width*.85,
           height: 188,
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
           decoration: BoxDecoration(
             color: const Color(0xFF0D56FF),
             borderRadius: BorderRadius.circular(32),

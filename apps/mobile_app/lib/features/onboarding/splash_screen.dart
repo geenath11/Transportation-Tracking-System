@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/services/user_profile_service.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../firebase_options.dart';
 import '../../features/auth/presentation/screen/permission_setup_page.dart';
 import '../../features/home/presentation/screen/home_page.dart';
 import 'onboarding_screen.dart';
@@ -22,9 +25,21 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _loadNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 3)),
+      _initializeApp(),
+    ]);
 
-    final user = FirebaseAuth.instance.currentUser;
+    if (!mounted) return;
+
+    User? user;
+
+    try {
+      user = FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      user = null;
+    }
+
     final prefs = await SharedPreferences.getInstance();
 
     final setupCompleted = prefs.getBool('setup_completed') ?? false;
@@ -51,6 +66,18 @@ class _SplashScreenState extends State<SplashScreen> {
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
     );
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+
+      await UserProfileService.instance
+          .load()
+          .timeout(const Duration(seconds: 4), onTimeout: () {});
+    } catch (_) {}
   }
 
   @override

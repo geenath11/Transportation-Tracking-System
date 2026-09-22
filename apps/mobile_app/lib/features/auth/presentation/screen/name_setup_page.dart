@@ -64,6 +64,9 @@ class _NameSetupPageState extends State<NameSetupPage> {
     setState(() {
       _isLoading = true;
     });
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_firstNameFocus.hasFocus) _firstNameFocus.unfocus();
+    if (_lastNameFocus.hasFocus) _lastNameFocus.unfocus();
     try {
       final fullName = [
         firstName,

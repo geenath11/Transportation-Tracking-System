@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../core/services/user_profile_service.dart';
 
 import '../app/app.dart';
-import 'firebase_options.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  await UserProfileService.instance.load();
-
   runApp(const CeyGoApp());
 }

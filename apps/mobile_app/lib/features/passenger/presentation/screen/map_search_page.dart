@@ -27,12 +27,14 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  StreamSubscription<DatabaseEvent>? _locationSubscription;
+  final List<StreamSubscription<DatabaseEvent>> _locationSubscriptions = [];
+  final Map<String, Marker> _liveBusMarkers = {};
+  final Map<String, Map<String, dynamic>?> _routeCache = {};
+
+  Timer? _markerFlushTimer;
 
   LatLng? _currentLocation;
   LatLng? _searchedLocation;
-
-  List<Marker> _liveBusMarkers = [];
 
   static const LatLng _defaultLocation = LatLng(6.9934, 81.0550);
 
@@ -40,7 +42,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
 
   final MapCachingProvider _mapCache =
       BuiltInMapCachingProvider.getOrCreateInstance(
-    maxCacheSize: 500 * 1024 * 1024,
+    maxCacheSize: 100 * 1024 * 1024,
   );
 
   @override
@@ -54,7 +56,11 @@ class _MapSearchPageState extends State<MapSearchPage> {
   @override
   void dispose() {
     _searchController.dispose();
-    _locationSubscription?.cancel();
+    _markerFlushTimer?.cancel();
+
+    for (final subscription in _locationSubscriptions) {
+      subscription.cancel();
+    }
 
     super.dispose();
   }
@@ -174,6 +180,10 @@ class _MapSearchPageState extends State<MapSearchPage> {
       return null;
     }
 
+    if (_routeCache.containsKey(routeId)) {
+      return _routeCache[routeId];
+    }
+
     const routeMapping = {
       'route_001': 'Zl21qkgaUAFZvDkgWCZA',
     };
@@ -181,124 +191,194 @@ class _MapSearchPageState extends State<MapSearchPage> {
     final documentId = routeMapping[routeId];
 
     if (documentId == null) {
+      _routeCache[routeId] = null;
+
       return null;
     }
 
-    final snapshot = await _firestore
-        .collection('routes')
-        .doc(documentId)
-        .get();
+    try {
+      final snapshot = await _firestore
+          .collection('routes')
+          .doc(documentId)
+          .get();
 
-    if (!snapshot.exists) {
+      final data = snapshot.exists ? snapshot.data() : null;
+
+      _routeCache[routeId] = data;
+
+      return data;
+    } catch (_) {
       return null;
     }
-
-    return snapshot.data();
   }
 
   void _listenForLiveBuses() {
-    _locationSubscription = _database.onValue.listen(
-      (event) {
-        final data = event.snapshot.value;
+    _locationSubscriptions.add(
+      _database.onChildAdded.listen(
+        _onBusAdded,
+        onError: (_) {},
+      ),
+    );
 
-        if (data is! Map) {
-          return;
-        }
+    _locationSubscriptions.add(
+      _database.onChildChanged.listen(
+        _onBusChanged,
+        onError: (_) {},
+      ),
+    );
 
-        final markers = <Marker>[];
+    _locationSubscriptions.add(
+      _database.onChildRemoved.listen(
+        _onBusRemoved,
+        onError: (_) {},
+      ),
+    );
+  }
 
-        data.forEach((busId, value) {
-          if (value is! Map) {
-            return;
-          }
+  void _onBusAdded(DatabaseEvent event) {
+    final busId = event.snapshot.key;
+    final value = event.snapshot.value;
 
-          final bus = Map<dynamic, dynamic>.from(value);
+    if (busId == null || value is! Map) {
+      return;
+    }
 
-          final latitude = (bus['latitude'] as num?)?.toDouble();
-          final longitude = (bus['longitude'] as num?)?.toDouble();
+    final bus = Map<dynamic, dynamic>.from(value);
 
-          if (latitude == null || longitude == null) {
-            return;
-          }
+    if (_hasCoordinates(bus)) {
+      _liveBusMarkers[busId] = _buildBusMarker(busId, bus);
 
-          final heading = (bus['heading'] as num?)?.toDouble() ?? 0;
+      _scheduleMarkerFlush();
+    }
+  }
 
-          markers.add(
-            Marker(
-              point: LatLng(
-                latitude,
-                longitude,
-              ),
-              width: 70,
-              height: 70,
-              child: GestureDetector(
-                onTap: () async {
-                  final route = await _getRouteData(
-                    bus['routeId']?.toString(),
-                  );
+  void _onBusChanged(DatabaseEvent event) {
+    final busId = event.snapshot.key;
+    final value = event.snapshot.value;
 
-                  if (!mounted) {
-                    return;
-                  }
+    if (busId == null || value is! Map) {
+      return;
+    }
 
-                  _showBusInformation(
-                    busId.toString(),
-                    bus,
-                    route,
-                  );
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(6),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(
-                              alpha: 0.12,
-                            ),
-                            blurRadius: 4,
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        busId.toString(),
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Transform.rotate(
-                      angle: heading * 3.14159 / 180,
-                      child: Image.asset(
-                        'assets/images/bus_marker.png',
-                        width: 38,
-                        height: 38,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
+    final bus = Map<dynamic, dynamic>.from(value);
+
+    if (_hasCoordinates(bus)) {
+      _liveBusMarkers[busId] = _buildBusMarker(busId, bus);
+
+      _scheduleMarkerFlush();
+    }
+  }
+
+  bool _hasCoordinates(Map<dynamic, dynamic> bus) {
+    final latitude = (bus['latitude'] as num?)?.toDouble();
+    final longitude = (bus['longitude'] as num?)?.toDouble();
+
+    return latitude != null && longitude != null;
+  }
+
+  void _onBusRemoved(DatabaseEvent event) {
+    final busId = event.snapshot.key;
+
+    if (busId == null) {
+      return;
+    }
+
+    _liveBusMarkers.remove(busId);
+
+    _scheduleMarkerFlush();
+  }
+
+  void _scheduleMarkerFlush() {
+    _markerFlushTimer ??= Timer(
+      const Duration(milliseconds: 800),
+      () {
+        _markerFlushTimer = null;
 
         if (!mounted) {
           return;
         }
 
-        setState(() {
-          _liveBusMarkers = markers;
-        });
+        setState(() {});
       },
+    );
+  }
+
+  Marker _buildBusMarker(
+    String busId,
+    Map<dynamic, dynamic> bus,
+  ) {
+    final latitude = (bus['latitude'] as num?)?.toDouble();
+    final longitude = (bus['longitude'] as num?)?.toDouble();
+
+    if (latitude == null || longitude == null) {
+      throw const FormatException('Bus without coordinates');
+    }
+
+    final heading = (bus['heading'] as num?)?.toDouble() ?? 0;
+
+    return Marker(
+      point: LatLng(
+        latitude,
+        longitude,
+      ),
+      width: 70,
+      height: 70,
+      child: GestureDetector(
+        onTap: () async {
+          final route = await _getRouteData(
+            bus['routeId']?.toString(),
+          );
+
+          if (!mounted) {
+            return;
+          }
+
+          _showBusInformation(
+            busId,
+            bus,
+            route,
+          );
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 2,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(
+                      alpha: 0.12,
+                    ),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: Text(
+                busId,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Transform.rotate(
+              angle: heading * 3.14159 / 180,
+              child: Image.asset(
+                'assets/images/bus_marker.png',
+                width: 38,
+                height: 38,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -527,7 +607,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 
                 userAgentPackageName:
-                    'com.ceygo.transportation',
+                    'com.example.transportationtrackingsystem',
 
                 tileProvider: NetworkTileProvider(
                   cachingProvider: _mapCache,
@@ -574,7 +654,7 @@ class _MapSearchPageState extends State<MapSearchPage> {
                       ),
                     ),
 
-                  ..._liveBusMarkers,
+                  ..._liveBusMarkers.values,
                 ],
               ),
             ],
