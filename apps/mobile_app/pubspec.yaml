@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  qr_flutter: ^4.1.0
   pinput: ^6.0.2
   permission_handler: ^13.0.2
   flutter_map: ^8.2.0

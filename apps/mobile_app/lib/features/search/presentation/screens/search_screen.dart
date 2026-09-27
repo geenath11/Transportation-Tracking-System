@@ -114,7 +114,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
                 RouteSelectorCard(
                   fromValue: fromLocation,

@@ -6,7 +6,7 @@ import '../widgets/search_bar.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../search/presentation/screens/search_screen.dart';
-import '../../../tickets/presentation/screens/ticket_screen.dart';
+import '../../../ticket/presentation/screens/my_tickets_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           _buildHomeTab(context),
           const SearchScreen(),
-          const TicketScreen(),
+          const MyTicketsScreen(),
           const ProfileScreen(),
         ],
       ),
@@ -43,7 +43,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildHomeTab(BuildContext context) {
-    final headerHeight = MediaQuery.sizeOf(context).height * 0.35;
+    final headerHeight = MediaQuery
+        .sizeOf(context)
+        .height * 0.35;
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -58,7 +60,10 @@ class _HomePageState extends State<HomePage> {
                   height: headerHeight,
                   fit: BoxFit.cover,
                   cacheWidth: MediaQuery.devicePixelRatioOf(context).ceil() *
-                      MediaQuery.sizeOf(context).width.toInt(),
+                      MediaQuery
+                          .sizeOf(context)
+                          .width
+                          .toInt(),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(24),

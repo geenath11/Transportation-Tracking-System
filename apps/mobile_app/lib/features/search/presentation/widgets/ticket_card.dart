@@ -28,12 +28,15 @@ class TicketCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final width = size.width;
+    final height = size.height;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.black, width: 2),
+        border: Border.all(color: Colors.black, width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -56,14 +59,14 @@ class TicketCard extends StatelessWidget {
                       departureTime,
                       style: AppTextStyles.bold.copyWith(
                         color: Colors.black,
-                        fontSize: 25,
+                        fontSize: 20,
                       ),
                     ),
                     Text(
                       departureCity,
                       style: AppTextStyles.regular.copyWith(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 16,
                       ),
                     ),
                   ],
@@ -89,14 +92,14 @@ class TicketCard extends StatelessWidget {
                       arrivalTime,
                       style: AppTextStyles.bold.copyWith(
                         color: Colors.black,
-                        fontSize: 25,
+                        fontSize: 20,
                       ),
                     ),
                     Text(
                       arrivalCity,
                       style: AppTextStyles.regular.copyWith(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 16,
                       ),
                     ),
                   ],
@@ -104,7 +107,7 @@ class TicketCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 4),
 
           RichText(
             text: TextSpan(
@@ -143,6 +146,8 @@ class TicketCard extends StatelessWidget {
 
           AppButton(
             borderRadius: 36,
+            height: 50,
+            width: size.width*.45,
             onPressed: onGetTickets,
             child: Text(
               'Get Tickets',
