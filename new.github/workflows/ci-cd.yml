@@ -2,9 +2,9 @@ name: Transportation Tracking System - CI/CD
 
 on:
 	push:
-		branches: [ "main", "ci-cd" ]
+		branches: [ "main", "ci-cd" , "develop" ]
 	pull_request:
-		branches: [ "main" ]
+		branches: [ "main", "ci-cd" , "develop"]
 
 jobs :  # CI- checks
   test :
