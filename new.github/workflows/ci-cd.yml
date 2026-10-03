@@ -1,3 +1,6 @@
 on:
   push:
     branches: [ "ci-cd", "main" ]
+deploy:
+  needs: test   # Tests pass check
+  if: github.ref == 'refs/heads/main' 
