@@ -1,19 +1,20 @@
 import React from "react";
-import {
-  LayoutDashboard,
-  Users,
-  UserCheck,
-  Contact,
-  Bus,
-  Route,
-  Calendar,
-  Ticket,
-  AlertTriangle,
-  Bell,
-  BarChart3,
-  Settings,
+import { 
+  LayoutDashboard, 
+  Users, 
+  UserCheck, 
+  Contact, 
+  Bus, 
+  Route, 
+  Calendar, 
+  Ticket, 
+  AlertTriangle, 
+  Bell, 
+  BarChart3, 
+  Settings, 
+  LogOut,
   X,
-  Shield,
+  Shield
 } from "lucide-react";
 
 interface SidebarProps {
@@ -21,14 +22,19 @@ interface SidebarProps {
   onPageChange: (page: string) => void;
   isOpen: boolean;
   onClose: () => void;
+  onLogout: () => void;
+  userEmail?: string | null;
 }
 
-export default function Sidebar({
-  activePage,
-  onPageChange,
-  isOpen,
-  onClose,
+export default function Sidebar({ 
+  activePage, 
+  onPageChange, 
+  isOpen, 
+  onClose, 
+  onLogout,
+  userEmail 
 }: SidebarProps) {
+  
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "users", label: "Users", icon: Users },
@@ -89,7 +95,7 @@ export default function Sidebar({
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-semibold text-slate-200 truncate">Administrator</p>
-              <p className="text-[10px] font-mono text-slate-400 truncate">admin@transport.com</p>
+              <p className="text-[10px] font-mono text-slate-400 truncate">{userEmail || "admin@transport.com"}</p>
             </div>
           </div>
         </div>
@@ -122,7 +128,16 @@ export default function Sidebar({
           })}
         </nav>
 
-       
+        {/* Footer / Logout */}
+        <div className="p-4 border-t border-slate-900">
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all duration-200"
+          >
+            <LogOut className="h-4.5 w-4.5" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </aside>
     </>
   );
