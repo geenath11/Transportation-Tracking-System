@@ -15,7 +15,7 @@ interface BookingsProps {
   bookings: Booking[];
   onCreate: (data: Booking) => Promise<void>;
   onUpdate: (id: string, data: Partial<Booking>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+ onDelete: (id: string) => void | Promise<void>;
 }
 
 export default function Bookings({

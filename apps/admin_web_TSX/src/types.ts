@@ -42,17 +42,49 @@ export interface Vehicle {
   createdAt?: string;
 }
 
+/* =====================================================
+   ROUTES
+   Supports BOTH Firestore route structures
+   ===================================================== */
+
+export interface RouteStop {
+  name: string;
+  eta: string;
+}
+
 export interface Route {
   id?: string;
-  route: string;
-  departureCity: string;
-  arrivalCity: string;
-  departureTime: string;
-  arrivalTime: string;
-  busType: string;
-  serviceName: string;
-  distanceKm: number;
-  duration: string;
+
+  /* ===================================================
+     TYPE 1
+     Route number + start + destination + stops
+     =================================================== */
+
+  routeNumber?: string;
+  start?: string;
+  destination?: string;
+  distance?: number;
+  stops?: RouteStop[];
+
+  /* ===================================================
+     TYPE 2
+     Bus service / route information
+     =================================================== */
+
+  route?: string;
+  departureCity?: string;
+  arrivalCity?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  busType?: string;
+  serviceName?: string;
+  distanceKm?: number;
+  duration?: string;
+
+  /* ===================================================
+     COMMON
+     =================================================== */
+
   createdAt?: string;
 }
 
@@ -88,10 +120,7 @@ export interface Booking {
   createdAt?: string;
 }
 
-export type ComplaintStatus =
-  | "Pending"
-  | "In Progress"
-  | "Resolved";
+export type ComplaintStatus = "Pending" | "In Progress" | "Resolved";
 
 export interface Complaint {
   id?: string;
@@ -109,10 +138,7 @@ export type NotificationTarget =
   | "Conductors"
   | "All Users";
 
-export type NotificationStatus =
-  | "Draft"
-  | "Scheduled"
-  | "Sent";
+export type NotificationStatus = "Draft" | "Scheduled" | "Sent";
 
 export interface NotificationItem {
   id?: string;
@@ -129,4 +155,22 @@ export interface ActivityLog {
   details: string;
   timestamp: string;
   operator: string;
+}
+
+export type RouteAssignmentStatus = "Assigned" | "Completed" | "Cancelled";
+
+export interface RouteAssignment {
+  id?: string;
+
+  routeId: string;
+  vehicleId: string;
+  driverId: string;
+  conductorId: string;
+
+  date: string;
+  departureTime: string;
+
+  status: RouteAssignmentStatus;
+
+  createdAt?: string;
 }

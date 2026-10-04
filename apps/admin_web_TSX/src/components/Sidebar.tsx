@@ -1,6 +1,7 @@
 import adminIcon from "../assets/Asset3.png";
 import logo from "../assets/Asset.png";
 import React from "react";
+
 import {
   LayoutDashboard,
   Users,
@@ -8,6 +9,7 @@ import {
   Contact,
   Bus,
   Route,
+  GitBranch,
   Calendar,
   Ticket,
   AlertTriangle,
@@ -36,18 +38,71 @@ export default function Sidebar({
   userEmail,
 }: SidebarProps) {
   const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "users", label: "Users", icon: Users },
-    { id: "drivers", label: "Drivers", icon: UserCheck },
-    { id: "conductors", label: "Conductors", icon: Contact },
-    { id: "vehicles", label: "Vehicles", icon: Bus },
-    { id: "routes", label: "Routes", icon: Route },
-    { id: "timetables", label: "Timetables", icon: Calendar },
-    { id: "bookings", label: "Bookings", icon: Ticket },
-    { id: "complaints", label: "Complaints", icon: AlertTriangle },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "analytics", label: "Analytics", icon: BarChart3 },
-    { id: "settings", label: "Settings", icon: Settings },
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "users",
+      label: "Users",
+      icon: Users,
+    },
+    {
+      id: "drivers",
+      label: "Drivers",
+      icon: UserCheck,
+    },
+    {
+      id: "conductors",
+      label: "Conductors",
+      icon: Contact,
+    },
+    {
+      id: "vehicles",
+      label: "Vehicles",
+      icon: Bus,
+    },
+    {
+      id: "routes",
+      label: "Routes",
+      icon: Route,
+    },
+    {
+      id: "route-assign",
+      label: "Route Assign",
+      icon: GitBranch,
+    },
+    {
+      id: "timetables",
+      label: "Timetables",
+      icon: Calendar,
+    },
+    {
+      id: "bookings",
+      label: "Bookings",
+      icon: Ticket,
+    },
+    {
+      id: "complaints",
+      label: "Complaints",
+      icon: AlertTriangle,
+    },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: Bell,
+    },
+    {
+      id: "analytics",
+      label: "Analytics",
+      icon: BarChart3,
+    },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+    },
   ];
 
   return (
@@ -76,15 +131,18 @@ export default function Sidebar({
                 className="h-full w-full object-contain"
               />
             </div>
+
             <div>
               <h1 className="font-display font-bold text-sm tracking-wide bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
                 TRANSIT ADMIN
               </h1>
+
               <p className="text-[10px] text-slate-500 font-mono tracking-wider">
                 SMART TRACKING
               </p>
             </div>
           </div>
+
           <button
             onClick={onClose}
             className="lg:hidden text-slate-400 hover:text-white p-1 rounded-md hover:bg-slate-900"
@@ -103,10 +161,12 @@ export default function Sidebar({
                 className="h-full w-full object-contain"
               />
             </div>
+
             <div className="overflow-hidden">
               <p className="text-xs font-semibold text-slate-200 truncate">
                 Administrator
               </p>
+
               <p className="text-[10px] font-mono text-slate-400 truncate">
                 {userEmail || "admin@transport.com"}
               </p>
@@ -119,6 +179,7 @@ export default function Sidebar({
           {menuItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = activePage === item.id;
+
             return (
               <button
                 key={item.id}
@@ -137,7 +198,9 @@ export default function Sidebar({
                     isActive ? "text-white" : "text-slate-400"
                   }`}
                 />
+
                 <span>{item.label}</span>
+
                 {isActive && (
                   <span className="ml-auto h-1.5 w-1.5 rounded-full bg-white" />
                 )}
