@@ -42,18 +42,17 @@ export interface Vehicle {
   createdAt?: string;
 }
 
-export interface RouteStop {
-  name: string;
-  eta: string;
-}
-
 export interface Route {
   id?: string;
-  routeNumber: string;
-  start: string;
-  destination: string;
-  distance: number;
-  stops: RouteStop[];
+  route: string;
+  departureCity: string;
+  arrivalCity: string;
+  departureTime: string;
+  arrivalTime: string;
+  busType: string;
+  serviceName: string;
+  distanceKm: number;
+  duration: string;
   createdAt?: string;
 }
 
@@ -70,19 +69,29 @@ export interface Timetable {
   createdAt?: string;
 }
 
-export type BookingStatus = "Confirmed" | "Pending" | "Cancelled";
-
 export interface Booking {
   id?: string;
-  bookingId: string;
+  ticketId: string;
   passengerName: string;
-  routeNumber: string;
-  seatNumber: string;
-  status: BookingStatus;
+  passengerPhone: string;
+  userId: string;
+  from: string;
+  to: string;
+  bus: string;
+  date: string;
+  departureTime: string;
+  arrivalTime: string;
+  selectedSeats: string[];
+  totalPrice: number;
+  paymentStatus: string;
+  ticketStatus: string;
   createdAt?: string;
 }
 
-export type ComplaintStatus = "Pending" | "In Progress" | "Resolved";
+export type ComplaintStatus =
+  | "Pending"
+  | "In Progress"
+  | "Resolved";
 
 export interface Complaint {
   id?: string;
@@ -94,8 +103,16 @@ export interface Complaint {
   createdAt?: string;
 }
 
-export type NotificationTarget = "Passengers" | "Drivers" | "Conductors" | "All Users";
-export type NotificationStatus = "Draft" | "Scheduled" | "Sent";
+export type NotificationTarget =
+  | "Passengers"
+  | "Drivers"
+  | "Conductors"
+  | "All Users";
+
+export type NotificationStatus =
+  | "Draft"
+  | "Scheduled"
+  | "Sent";
 
 export interface NotificationItem {
   id?: string;

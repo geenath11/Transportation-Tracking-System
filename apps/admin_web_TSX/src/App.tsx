@@ -29,7 +29,6 @@ import {
   onAuthStateSubscription,
 } from "./services/authService";
 import {
-  seedDatabaseIfEmpty,
   subscribeToCollection,
   createDocument,
   updateDocument,
@@ -92,8 +91,6 @@ export default function App() {
   // 1. Initial Seeding and Auth subscription
   useEffect(() => {
     // Check and seed DB with base mock records if empty
-    seedDatabaseIfEmpty();
-
     const unsubAuth = onAuthStateSubscription((firebaseUser) => {
       setUser(firebaseUser);
       setAuthLoading(false);
@@ -121,7 +118,7 @@ export default function App() {
       subscribeToCollection<Timetable>("timetables", (data) =>
         setTimetables(data)
       ),
-      subscribeToCollection<Booking>("bookings", (data) => setBookings(data)),
+      subscribeToCollection<Booking>("tickets", (data) => setBookings(data)),
       subscribeToCollection<Complaint>("complaints", (data) =>
         setComplaints(data)
       ),
@@ -330,14 +327,14 @@ export default function App() {
       v.vehicleType.toLowerCase().includes(searchLower)
   );
 
-  const searchedRoutes = routes.filter(
-    (r) =>
-      !globalSearch ||
-      r.routeNumber.toLowerCase().includes(searchLower) ||
-      r.start.toLowerCase().includes(searchLower) ||
-      r.destination.toLowerCase().includes(searchLower)
-  );
-
+ const searchedRoutes = routes.filter(
+  (r) =>
+    !globalSearch ||
+    r.route.toLowerCase().includes(searchLower) ||
+    r.departureCity.toLowerCase().includes(searchLower) ||
+    r.arrivalCity.toLowerCase().includes(searchLower) ||
+    r.serviceName.toLowerCase().includes(searchLower)
+);
   const searchedTimetables = timetables.filter(
     (t) =>
       !globalSearch ||
@@ -349,7 +346,7 @@ export default function App() {
   const searchedBookings = bookings.filter(
     (b) =>
       !globalSearch ||
-      b.bookingId.toLowerCase().includes(searchLower) ||
+      b.ticketId.toLowerCase().includes(searchLower) ||
       b.passengerName.toLowerCase().includes(searchLower)
   );
 
@@ -489,11 +486,11 @@ export default function App() {
         return (
           <Bookings
             bookings={searchedBookings}
-            onCreate={(data) => handleCreate("bookings", data)}
-            onUpdate={(id, data) => handleUpdate("bookings", id, data)}
+            onCreate={(data) => handleCreate("tickets", data)}
+            onUpdate={(id, data) => handleUpdate("tickets", id, data)}
             onDelete={(id) =>
               triggerDelete(
-                "bookings",
+                "tickets",
                 id,
                 "Purge Booking?",
                 "Deleting this travel booking cannot be undone. Seats will be re-opened immediately."
