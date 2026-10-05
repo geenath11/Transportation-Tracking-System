@@ -1,0 +1,54 @@
+# Flutter
+.dart_tool/
+.pub/
+build/
+
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Dart
+.pub-cache/
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+
+# Signing keys
+*.jks
+*.keystore
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
+
+# macOS
+macos/Flutter/ephemeral/
+
+# Linux
+linux/flutter/ephemeral/
+
+# Windows
+windows/flutter/ephemeral/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Coverage
+coverage/
+
+# Misc
+.DS_Store
+Thumbs.db

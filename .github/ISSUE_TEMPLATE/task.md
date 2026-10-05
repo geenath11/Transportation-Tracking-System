@@ -1,9 +1,9 @@
 ---
-name: 🧩 Task
+name: 🧩 Task manager
 about: Development task
 title: "[TASK] "
 labels: task
-assignees: ""
+assignees: "N"
 ---
 
 ## Task Description
