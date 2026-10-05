@@ -1,0 +1,35 @@
+workflows:
+  ios-debug-build:
+    name: iOS Debug Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      groups:
+        - firebase
+
+    scripts:
+      - name: Configure Firebase
+        script: |
+          cd apps/mobile_app
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          printf '%s' "$FIREBASE_IOS_CONFIG" > ios/Runner/GoogleService-Info.plist
+
+      - name: Get Flutter packages
+        script: |
+          cd apps/mobile_app
+          flutter pub get
+
+      - name: Build iOS Debug
+        script: |
+          cd apps/mobile_app
+          flutter build ios --debug --simulator
+
+      - name: Create Runner.app ZIP
+        script: |
+          cd apps/mobile_app/build/ios/iphonesimulator
+          zip -r Runner.app.zip Runner.app
+
+    artifacts:
+      - apps/mobile_app/build/ios/iphonesimulator/Runner.app.zip
