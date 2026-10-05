@@ -1,0 +1,6 @@
+{
+  "name": "Smart Transportation Tracking System",
+  "description": "Admin panel for managing passengers, drivers, conductors, vehicles, routes, timetables, bookings, complaints, notifications, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
