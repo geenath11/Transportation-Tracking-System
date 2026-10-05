@@ -39,9 +39,14 @@ export interface Vehicle {
   vehicleType: string;
   capacity: number;
   status: VehicleStatus;
+
+  // Live tracking
+  latitude?: number;
+  longitude?: number;
+  lastUpdated?: string;
+
   createdAt?: string;
 }
-
 /* =====================================================
    ROUTES
    Supports BOTH Firestore route structures

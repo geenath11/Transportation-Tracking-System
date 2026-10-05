@@ -12,6 +12,7 @@ import {
   GitBranch,
   Calendar,
   Ticket,
+  MapPinned,
   AlertTriangle,
   Bell,
   BarChart3,
@@ -63,6 +64,11 @@ export default function Sidebar({
       label: "Vehicles",
       icon: Bus,
     },
+   {
+  id: "live-tracking",
+  label: "Live Tracking",
+  icon: MapPinned,
+},
     {
       id: "routes",
       label: "Routes",
