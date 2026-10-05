@@ -6,20 +6,25 @@ import 'package:transportation_tracking_system/core/theme/app_text_styles.dart';
 class ProfileHeader extends StatelessWidget {
   final String? imagePath;
 
-  const ProfileHeader({super.key, this.imagePath});
+  const ProfileHeader({
+    super.key,
+    this.imagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final topPadding = MediaQuery.paddingOf(context).top;
+
     return SizedBox(
       width: double.infinity,
-      height: 210,
+      height: 220 + topPadding,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
           Container(
             width: double.infinity,
-            height: 150,
+            height: 150 + topPadding,
             decoration: const BoxDecoration(
               gradient: SweepGradient(
                 colors: [
@@ -35,8 +40,9 @@ class ProfileHeader extends StatelessWidget {
               ),
             ),
           ),
+
           Positioned(
-            top: 50,
+            top: topPadding + 50,
             child: CircleAvatar(
               radius: 60,
               backgroundColor: Colors.white,
@@ -48,16 +54,17 @@ class ProfileHeader extends StatelessWidget {
                     : null,
                 child: imagePath == null
                     ? const Icon(
-                        Icons.person,
-                        size: 55,
-                        color: AppColors.primary,
-                      )
+                  Icons.person,
+                  size: 55,
+                  color: AppColors.primary,
+                )
                     : null,
               ),
             ),
           ),
+
           Positioned(
-            top: 169,
+            top: topPadding + 169,
             left: 24,
             right: 24,
             child: Column(
@@ -70,7 +77,7 @@ class ProfileHeader extends StatelessWidget {
                     color: const Color(0xFF202124),
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 2),
                 Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 10,
@@ -92,6 +99,8 @@ class ProfileHeader extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 2),
+
               ],
             ),
           ),

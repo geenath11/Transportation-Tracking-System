@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
-import '../features/onboarding/splash_screen.dart';
+import '../core/services/app_preferences.dart';
+import '../features/auth/onboarding/splash_screen.dart';
 
 class CeyGoApp extends StatelessWidget {
-  const CeyGoApp({super.key});
+  final AppPreferences appPreferences;
+
+  const CeyGoApp({super.key, required this.appPreferences});
 
   @override
   Widget build(BuildContext context) {
