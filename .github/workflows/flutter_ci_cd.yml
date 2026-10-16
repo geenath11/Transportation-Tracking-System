@@ -1,3 +1,4 @@
+
 name: Flutter CI/CD
 
 on:
@@ -7,7 +8,6 @@ on:
       - develop
     tags:
       - "v*"
-
   pull_request:
     branches:
       - main
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Test Flutter App
+    name: Build and Test
     runs-on: ubuntu-latest
 
     defaults:
@@ -30,27 +30,23 @@ jobs:
         working-directory: apps/mobile_app
 
     steps:
-      # 1. Checkout repository
-      - name: 📥 Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Java 21
-      - name: ☕ Setup Java 21
+      - name: Set up Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
 
-      # 3. Setup Flutter
-      - name: 🦋 Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: "3.44.0"
           cache: true
 
-      # 4. Cache Gradle
-      - name: ⚡ Cache Gradle
+      - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
@@ -60,44 +56,45 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 5. Show Flutter information
-      - name: 🔎 Flutter Doctor
+      - name: Check Flutter setup
         run: flutter doctor -v
 
-      # 6. Install dependencies
-      - name: 📥 Install Dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      # 7. Check formatting
-      - name: 📝 Check Code Formatting
+      - name: Restore Firebase options
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+        run: |
+          test -n "$FIREBASE_OPTIONS_DART" || {
+            echo "FIREBASE_OPTIONS_DART secret is missing."
+            exit 1
+          }
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+
+      - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
 
-      # 8. Analyze project
-      - name: 🔍 Analyze Flutter Project
+      - name: Analyze code
         run: flutter analyze
 
-      # 9. Run tests
-      - name: 🧪 Run Unit Tests
+      - name: Run tests
         run: flutter test
 
-      # 10. Build release APK files
-      - name: 🏗️ Build Release APK
+      - name: Build APK
         run: flutter build apk --release --split-per-abi
 
-      # 11. Verify APK output
-      - name: ✅ Verify APK Output
+      - name: Verify APK
         run: |
           ls -la build/app/outputs/flutter-apk
           test -f build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 
-      # 12. Collect APK files
-      - name: 📦 Collect APK Files
+      - name: Collect APKs
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/*.apk artifacts/
 
-      # 13. Upload APK files to workflow artifacts
-      - name: 📤 Upload APK Artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
           name: smart-transport-mobile-app-${{ github.sha }}
@@ -105,8 +102,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      # 14. Create GitHub Release for version tags
-      - name: 🚀 Create GitHub Release
+      - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: ncipollo/release-action@v1
         with:
