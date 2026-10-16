@@ -1,0 +1,60 @@
+workflows:
+  ios-debug-build:
+    name: Cey Go iOS Simulator Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    environment:
+      flutter: stable
+      groups:
+        - firebase
+
+    scripts:
+      - name: Configure Firebase
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+
+          test -n "${FIREBASE_OPTIONS_DART:-}" || {
+            echo "FIREBASE_OPTIONS_DART is missing."
+            exit 1
+          }
+
+          test -n "${FIREBASE_IOS_CONFIG:-}" || {
+            echo "FIREBASE_IOS_CONFIG is missing."
+            exit 1
+          }
+
+          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          printf '%s' "$FIREBASE_IOS_CONFIG" > ios/Runner/GoogleService-Info.plist
+
+          plutil -lint ios/Runner/GoogleService-Info.plist
+
+      - name: Get Flutter packages
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+          flutter pub get
+
+      - name: Build iOS Simulator App
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+          flutter build ios --debug --simulator --no-codesign
+
+      - name: Package Simulator App
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+
+          test -d build/ios/iphonesimulator/Runner.app
+
+          mkdir -p artifacts
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/ios/iphonesimulator/Runner.app \
+            artifacts/Runner-simulator.zip
+
+          ls -lh artifacts/Runner-simulator.zip
+
+    artifacts:
+      - apps/mobile_app/artifacts/Runner-simulator.zip
