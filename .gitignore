@@ -111,3 +111,4 @@ apps/mobile_app/android/app/google-services.json
 apps/mobile_app/ios/Runner/GoogleService-Info.plist
 apps/mobile_app/lib/firebase_options.dart
 >>>>>>> Stashed changes
+apps/mobile_app/ios/Runner/Info.plist
