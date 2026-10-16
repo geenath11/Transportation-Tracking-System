@@ -6,10 +6,7 @@ import 'package:transportation_tracking_system/core/theme/app_text_styles.dart';
 class ProfileHeader extends StatelessWidget {
   final String? imagePath;
 
-  const ProfileHeader({
-    super.key,
-    this.imagePath,
-  });
+  const ProfileHeader({super.key, this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -54,10 +51,10 @@ class ProfileHeader extends StatelessWidget {
                     : null,
                 child: imagePath == null
                     ? const Icon(
-                  Icons.person,
-                  size: 55,
-                  color: AppColors.primary,
-                )
+                        Icons.person,
+                        size: 55,
+                        color: AppColors.primary,
+                      )
                     : null,
               ),
             ),
@@ -100,7 +97,6 @@ class ProfileHeader extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 2),
-
               ],
             ),
           ),

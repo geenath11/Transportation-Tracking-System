@@ -72,6 +72,17 @@ jobs:
           }
           printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
 
+      - name: Restore Firebase Android configuration
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          test -n "$GOOGLE_SERVICES_JSON" || {
+            echo "GOOGLE_SERVICES_JSON secret is missing."
+            exit 1
+          }
+          printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          test -s android/app/google-services.json
+
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
 

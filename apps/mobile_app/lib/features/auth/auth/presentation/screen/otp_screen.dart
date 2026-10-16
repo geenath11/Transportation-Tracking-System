@@ -127,7 +127,6 @@ class _OtpScreenState extends State<OtpScreen> {
     super.dispose();
   }
 
-
   Future<void> _routeUserAfterVerification() async {
     final user = _auth.currentUser;
 
@@ -141,7 +140,6 @@ class _OtpScreenState extends State<OtpScreen> {
         .get();
 
     if (!mounted) return;
-
 
     if (!userDocument.exists) {
       Navigator.pushReplacement(
@@ -165,7 +163,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
     final role = data['role']?.toString();
 
-
     final homePage = RoleRouter.getHomeForRole(role);
 
     if (homePage != null) {
@@ -181,7 +178,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
     await _auth.signOut();
   }
-
 
   Future<void> _verifyOTP() async {
     if (_isLoading) return;
@@ -234,7 +230,6 @@ class _OtpScreenState extends State<OtpScreen> {
       _showMessage('Something went wrong. Please try again.');
     }
   }
-
 
   Future<void> _resendOtp() async {
     if (_isLoading) return;
@@ -316,7 +311,6 @@ class _OtpScreenState extends State<OtpScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(message)));
   }
-
 
   @override
   Widget build(BuildContext context) {

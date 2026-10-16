@@ -9,13 +9,11 @@ class AppPreferences {
 
   AppPreferences(this._prefs);
 
-
   bool get setupCompleted => _prefs.getBool(_setupCompletedKey) ?? false;
 
   Future<void> setSetupCompleted(bool value) async {
     await _prefs.setBool(_setupCompletedKey, value);
   }
-
 
   int get lastSelectedTab => _prefs.getInt(_lastSelectedTabKey) ?? 0;
 
@@ -23,13 +21,11 @@ class AppPreferences {
     await _prefs.setInt(_lastSelectedTabKey, index);
   }
 
-
   String get themeMode => _prefs.getString(_themeModeKey) ?? 'system';
 
   Future<void> setThemeMode(String mode) async {
     await _prefs.setString(_themeModeKey, mode);
   }
-
 
   Future<void> clear() async {
     await _prefs.remove(_setupCompletedKey);
