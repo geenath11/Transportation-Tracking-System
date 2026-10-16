@@ -69,6 +69,9 @@ jobs:
           printf '%s' "$GOOGLE_SERVICE_INFO_PLIST" > ios/Runner/GoogleService-Info.plist
           plutil -lint ios/Runner/GoogleService-Info.plist
 
+      - name: Format Firebase options
+        run: dart format lib/firebase_options.dart
+
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed .
 
