@@ -137,8 +137,7 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
                           Expanded(
                             child: AppButton(
                               width: double.infinity,
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               child: Text(
                                 'Reserved Seats',
                                 style: AppTextStyles.semiBold.copyWith(
@@ -155,8 +154,7 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
                           Expanded(
                             child: AppButton(
                               width: double.infinity,
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               child: Text(
                                 'Seats',
                                 style: AppTextStyles.semiBold.copyWith(
@@ -169,8 +167,7 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
                           Expanded(
                             child: AppButton(
                               width: double.infinity,
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               child: Text(
                                 'My Trip',
                                 style: AppTextStyles.semiBold.copyWith(

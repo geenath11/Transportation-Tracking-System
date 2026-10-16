@@ -15,7 +15,6 @@ class _PolicyColors {
   static const onPrimaryPill = Color(0x2EFFFFFF);
 }
 
-
 class _PolicySection {
   final int number;
   final String title;
@@ -38,9 +37,7 @@ const _sections = <_PolicySection>[
   _PolicySection(
     number: 1,
     title: 'Information We Collect',
-    paragraphs: [
-      'Depending on the features you use, Cey Go may collect:',
-    ],
+    paragraphs: ['Depending on the features you use, Cey Go may collect:'],
     bullets: [
       'Account Information: Name, email address, phone number, and account '
           'credentials.',
@@ -164,7 +161,6 @@ const _sections = <_PolicySection>[
   ),
 ];
 
-
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
@@ -264,10 +260,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   Text(
                     'Cey Go respects your privacy and is committed to '
-                        'protecting the information you provide while using our '
-                        'application. This Privacy Policy explains what '
-                        'information may be collected, how it is used, and how it '
-                        'is protected.',
+                    'protecting the information you provide while using our '
+                    'application. This Privacy Policy explains what '
+                    'information may be collected, how it is used, and how it '
+                    'is protected.',
                     style: AppTextStyles.regular.copyWith(
                       fontSize: 15,
                       height: 1.6,
@@ -315,7 +311,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _SectionDivider extends StatelessWidget {
   const _SectionDivider();

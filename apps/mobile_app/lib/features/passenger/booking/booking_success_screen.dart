@@ -65,18 +65,18 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
     if (isBooked) {
       fillColor = const Color(0xFFB9BEC7);
       child = const Icon(Icons.close, size: 16, color: Colors.white);
-       } else if (isSelected) {
-  fillColor = primaryBlue;
-  child = Center(
-  child: Text(
-  '${index + 1}',
-  style: AppTextStyles.semiBold.copyWith(
-  color: Colors.white,
-  fontSize: 13,
-  ),
-  ),
-  );
-  } else {
+    } else if (isSelected) {
+      fillColor = primaryBlue;
+      child = Center(
+        child: Text(
+          '${index + 1}',
+          style: AppTextStyles.semiBold.copyWith(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+        ),
+      );
+    } else {
       fillColor = Colors.white;
     }
 

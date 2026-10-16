@@ -72,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-
     if (roleIsCached) {
       unawaited(_refreshProfile());
     } else {

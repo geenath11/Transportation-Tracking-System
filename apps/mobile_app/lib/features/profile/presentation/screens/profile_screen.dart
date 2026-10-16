@@ -113,7 +113,6 @@ class ProfileScreen extends StatelessWidget {
                                 builder: (_) => const PrivacyPolicyScreen(),
                               ),
                             );
-
                           },
                         ),
 
