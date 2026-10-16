@@ -94,7 +94,6 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildHero(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top + kToolbarHeight;
 
@@ -138,7 +137,6 @@ class AboutUsScreen extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -189,7 +187,6 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-
   static const _features = <_Feature>[
     _Feature(Icons.directions_bus_rounded, 'Bus and train service information'),
     _Feature(Icons.my_location_rounded, 'Live vehicle location and tracking'),
@@ -222,7 +219,6 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildStaffPanel() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -250,7 +246,6 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildClosing() {
     return Container(
       width: double.infinity,
@@ -270,7 +265,6 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 }
-
 
 class _Feature {
   final IconData icon;

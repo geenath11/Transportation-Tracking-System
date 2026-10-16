@@ -47,18 +47,14 @@ class TicketSearchController extends ChangeNotifier {
 
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-
   String _fromLocation = '';
   String _toLocation = '';
   DateTime? _selectedDate;
 
-
   List<TicketModel> _tickets = [];
-
 
   bool _isLoading = false;
   String? _errorMessage;
-
 
   String get fromLocation => _fromLocation;
 
@@ -71,7 +67,6 @@ class TicketSearchController extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   String? get errorMessage => _errorMessage;
-
 
   Future<void> searchTickets() async {
     if (_fromLocation.trim().isEmpty || _toLocation.trim().isEmpty) {
@@ -95,16 +90,13 @@ class TicketSearchController extends ChangeNotifier {
       debugPrint('To: $_toLocation');
       debugPrint('Date: $_selectedDate');
 
-
       final snapshot = await _firestore
           .collection('routes')
           .where('departureCity', isEqualTo: _fromLocation.trim())
           .where('arrivalCity', isEqualTo: _toLocation.trim())
           .get();
 
-
       debugPrint('Firestore documents found: ${snapshot.docs.length}');
-
 
       _tickets = snapshot.docs.map((document) {
         debugPrint('Route document ID: ${document.id}');
@@ -113,7 +105,6 @@ class TicketSearchController extends ChangeNotifier {
 
         return TicketModel.fromFirestore(document);
       }).toList();
-
 
       if (_tickets.isEmpty) {
         _errorMessage = 'No routes found for $_fromLocation → $_toLocation';
@@ -147,7 +138,6 @@ class TicketSearchController extends ChangeNotifier {
     }
   }
 
-
   void setFromLocation(String location) {
     _fromLocation = location.trim();
 
@@ -155,7 +145,6 @@ class TicketSearchController extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
   void setToLocation(String location) {
     _toLocation = location.trim();
@@ -165,7 +154,6 @@ class TicketSearchController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
 
@@ -173,7 +161,6 @@ class TicketSearchController extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
   void swapLocations() {
     final temp = _fromLocation;
@@ -186,7 +173,6 @@ class TicketSearchController extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void clearTickets() {
     _tickets = [];
 
@@ -194,7 +180,6 @@ class TicketSearchController extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
   void clearSearch() {
     _fromLocation = '';
