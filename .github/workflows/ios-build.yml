@@ -73,7 +73,10 @@ jobs:
         run: dart format lib/firebase_options.dart
 
       - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
+        shell: bash
+        run: |
+          git ls-files -z '*.dart' \
+            | xargs -0 -r dart format --output=none --set-exit-if-changed
 
       - name: Analyze code
         run: flutter analyze
