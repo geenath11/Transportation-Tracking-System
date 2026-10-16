@@ -1,6 +1,7 @@
+
 workflows:
   ios-debug-build:
-    name: Cey Go iOS Simulator Build
+    name: CeyGo iOS Debug Build
     max_build_duration: 120
     instance_type: mac_mini_m2
 
@@ -10,51 +11,139 @@ workflows:
         - firebase
 
     scripts:
+      # 1. Generate Firebase configuration files
       - name: Configure Firebase
         script: |
           set -euo pipefail
+
           cd apps/mobile_app
 
           test -n "${FIREBASE_OPTIONS_DART:-}" || {
-            echo "FIREBASE_OPTIONS_DART is missing."
+            echo "ERROR: FIREBASE_OPTIONS_DART is missing or empty."
             exit 1
           }
 
           test -n "${FIREBASE_IOS_CONFIG:-}" || {
-            echo "FIREBASE_IOS_CONFIG is missing."
+            echo "ERROR: FIREBASE_IOS_CONFIG is missing or empty."
             exit 1
           }
 
-          printf '%s' "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
-          printf '%s' "$FIREBASE_IOS_CONFIG" > ios/Runner/GoogleService-Info.plist
+          printf '%s' "$FIREBASE_OPTIONS_DART" \
+            > lib/firebase_options.dart
+
+          printf '%s' "$FIREBASE_IOS_CONFIG" \
+            > ios/Runner/GoogleService-Info.plist
 
           plutil -lint ios/Runner/GoogleService-Info.plist
 
+          grep -q "static const FirebaseOptions ios" \
+            lib/firebase_options.dart || {
+              echo "ERROR: iOS Firebase options are missing."
+              exit 1
+            }
+
+          grep -q "iosBundleId: 'lk.ceygo.app'" \
+            lib/firebase_options.dart || {
+              echo "ERROR: Incorrect iOS bundle ID in Firebase options."
+              exit 1
+            }
+
+          grep -q '<string>smart-transport-tts</string>' \
+            ios/Runner/GoogleService-Info.plist || {
+              echo "ERROR: Firebase project ID does not match."
+              exit 1
+            }
+
+          grep -q '<string>lk.ceygo.app</string>' \
+            ios/Runner/GoogleService-Info.plist || {
+              echo "ERROR: Firebase plist bundle ID does not match."
+              exit 1
+            }
+
+          echo "Firebase configuration validation passed."
+
+      # 2. Install Flutter dependencies
       - name: Get Flutter packages
         script: |
           set -euo pipefail
           cd apps/mobile_app
+
           flutter pub get
 
-      - name: Build iOS Simulator App
-        script: |
-          set -euo pipefail
-          cd apps/mobile_app
-          flutter build ios --debug --simulator --no-codesign
-
-      - name: Package Simulator App
+      # 3. Validate generated Dart configuration
+      - name: Validate Firebase Dart configuration
         script: |
           set -euo pipefail
           cd apps/mobile_app
 
-          test -d build/ios/iphonesimulator/Runner.app
+          dart format lib/firebase_options.dart
 
-          mkdir -p artifacts
+          dart analyze lib/firebase_options.dart
+
+          echo "Firebase Dart configuration is valid."
+
+      # 4. Build iOS Simulator application
+      - name: Build iOS Debug
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+
+          mkdir -p build/diagnostics
+
+          flutter build ios \
+            --debug \
+            --simulator \
+            --verbose \
+            2>&1 | tee build/diagnostics/ios-build.log
+
+      # 5. Verify generated application
+      - name: Verify Runner.app
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app
+
+          APP="build/ios/iphonesimulator/Runner.app"
+
+          test -d "$APP" || {
+            echo "ERROR: Runner.app was not generated."
+            exit 1
+          }
+
+          test -f "$APP/Info.plist" || {
+            echo "ERROR: Runner.app/Info.plist is missing."
+            exit 1
+          }
+
+          plutil -lint "$APP/Info.plist"
+
+          /usr/libexec/PlistBuddy \
+            -c "Print :CFBundleIdentifier" \
+            "$APP/Info.plist"
+
+          echo "Runner.app was generated successfully."
+
+          if test -f "$APP/GoogleService-Info.plist"; then
+            plutil -lint "$APP/GoogleService-Info.plist"
+            echo "Firebase plist is included in Runner.app."
+          else
+            echo "WARNING: Firebase plist is not bundled in Runner.app."
+            echo "Check the Runner target resource configuration."
+          fi
+
+      # 6. Package application
+      - name: Create Runner.app ZIP
+        script: |
+          set -euo pipefail
+          cd apps/mobile_app/build/ios/iphonesimulator
+
           ditto -c -k --sequesterRsrc --keepParent \
-            build/ios/iphonesimulator/Runner.app \
-            artifacts/Runner-simulator.zip
+            Runner.app Runner.app.zip
 
-          ls -lh artifacts/Runner-simulator.zip
+          test -s Runner.app.zip
+
+          echo "Simulator application ZIP created."
 
     artifacts:
-      - apps/mobile_app/artifacts/Runner-simulator.zip
+      - apps/mobile_app/build/ios/iphonesimulator/Runner.app.zip
+      - apps/mobile_app/build/diagnostics/ios-build.log
+      - /tmp/xcodebuild_logs/*.log
