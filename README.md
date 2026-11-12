@@ -24,7 +24,7 @@ The mobile application is developed using **Flutter** and connects to **Firebase
 ## Project Overview
 
 <p align="center">
-  <img src="/assets/images/front-poster-veygo@2x.png" alt="CeyGo Project Poster" width="800" />
+  <img src="/assets/images/front-poster-veygo.png" alt="CeyGo Project Poster" width="800" />
 </p>
 
 <p align="center">
@@ -507,7 +507,7 @@ Then verify the application builds successfully.
 CeyGo also includes a web-based administration interface for centralized transportation management.
 
 <p align="center">
-  <img src="/assets/images/admin-panel@2x.png" alt="CeyGo Admin Panel Dashboard" width="900" />
+  <img src="/assets/images/admin-panel@.png" alt="CeyGo Admin Panel Dashboard" width="900" />
 </p>
 
 The administration interface is designed to support management of users, drivers, conductors, vehicles, routes, schedules, bookings, and transportation operations.
